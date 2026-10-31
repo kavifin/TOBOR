@@ -4,6 +4,7 @@ import { Camera, ImagePlus, X, Check } from 'lucide-react'
 import Field from '../components/Field.jsx'
 import QtyStepper from '../components/QtyStepper.jsx'
 import { api } from '../lib/api.js'
+import { localId } from '../lib/format.js'
 import { MATERIALS } from '../../shared/pricing.js'
 
 const MAX_PHOTOS = 6
@@ -30,7 +31,7 @@ export default function PhotoRequest({ source = 'web' }) {
       if (!f.type.startsWith('image/')) err = 'Only photos can be added here. For STL or OBJ files, use the 3D file tab.'
       else if (f.size > MAX_PHOTO_BYTES) err = `${f.name} is over 15 MB. Try a smaller photo.`
       else if (next.length >= MAX_PHOTOS) err = `You can add up to ${MAX_PHOTOS} photos.`
-      else next.push({ file: f, url: URL.createObjectURL(f), id: crypto.randomUUID() })
+      else next.push({ file: f, url: URL.createObjectURL(f), id: localId() })
     }
     setPhotos(next)
     setErrors((e) => ({ ...e, photos: err || undefined }))
