@@ -7,7 +7,7 @@ export default function Send() {
       <div className="container narrow">
         <header className="page-head">
           <h1>Send photos for a quote</h1>
-          <p>Take 2 to 3 photos from different sides. We’ll reply on WhatsApp with a sample 3D model and a price, usually within 24 hours.</p>
+          <p>Take 2–3 photos from different sides. We’ll reply on WhatsApp with a sample 3D model and a price, usually within 24 hours.</p>
         </header>
         <PhotoRequest source="qr" />
       </div>

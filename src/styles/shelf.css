@@ -10,6 +10,16 @@
   position: relative;
   max-width: 1040px;
 }
+.shelf-badge {
+  display: inline-block;
+  margin: 0 0 22px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
 .shelf-title {
   margin: 0 0 22px;
   font-size: clamp(2.6rem, 1.3rem + 4.6vw, 5.6rem);
@@ -33,7 +43,7 @@
 .note {
   position: absolute;
   margin: 0;
-  font-family: var(--primitive-font-hand);
+  font-family: 'Caveat', cursive;
   font-weight: 600;
   font-size: 1.7rem;
   line-height: 1;
@@ -95,8 +105,8 @@
   visibility: hidden;
   will-change: transform, clip-path;
   background:
-    radial-gradient(90% 60% at 50% 35%, color-mix(in srgb, var(--color-paper-hi) 85%, transparent), transparent 70%),
-    linear-gradient(170deg, color-mix(in srgb, var(--tint) 22%, var(--color-sand-120)), color-mix(in srgb, var(--tint) 48%, var(--color-sand-250)));
+    radial-gradient(90% 60% at 50% 35%, rgba(255, 255, 255, 0.85), transparent 70%),
+    linear-gradient(170deg, color-mix(in srgb, var(--tint) 22%, #f5efe6), color-mix(in srgb, var(--tint) 48%, #d9cbb7));
 }
 .shelf-link {
   position: absolute;
@@ -133,10 +143,10 @@
   padding: 9px 12px 10px 54px;
   border-radius: 14px;
   text-align: left;
-  background: color-mix(in srgb, var(--color-surface) 62%, transparent);
+  background: rgba(251, 248, 243, 0.62);
   -webkit-backdrop-filter: blur(12px) saturate(1.5);
   backdrop-filter: blur(12px) saturate(1.5);
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 75%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.75);
 }
 .shelf-card:focus-within .shelf-info {
   box-shadow: 0 0 0 3px var(--primitive-color-forest-400);
@@ -166,10 +176,10 @@
   height: 38px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 90%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   background: var(--color-primary);
-  color: var(--color-paper-hi);
-  box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--color-primary) 80%, transparent);
+  color: #fff;
+  box-shadow: 0 6px 14px -6px rgba(18, 112, 72, 0.8);
   transition: transform 160ms var(--ease-out), background-color 160ms;
 }
 .shelf-add:hover {
@@ -201,8 +211,8 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 85%, transparent);
-  background: color-mix(in srgb, var(--color-paper-hi) 55%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.55);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   color: var(--color-ink);
@@ -221,8 +231,11 @@
 }
 
 /* entrance: plays once when the section scrolls into view */
-.js .shelf:not(.is-in) :is(.shelf-title span, .shelf-sub, .shelf-band, .shelf-ring, .note) {
+.shelf:not(.is-in) :is(.shelf-badge, .shelf-title span, .shelf-sub, .shelf-band, .shelf-ring, .note) {
   opacity: 0;
+}
+.shelf.is-in .shelf-badge {
+  animation: shelf-pop 600ms var(--ease-out) both;
 }
 .shelf.is-in .shelf-title span {
   animation: shelf-rise 900ms var(--ease-out) both;

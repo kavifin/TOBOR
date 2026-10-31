@@ -23,7 +23,7 @@ export default function Product() {
   const hex = byId(COLORS, color ?? product?.color)?.hex
   const object = useMemo(() => product && buildShape(product.shape, byId(COLORS, product.color).hex), [product])
   useEffect(() => {
-    document.title = product ? `${product.name} | TOBOR` : 'Not found | TOBOR'
+    document.title = product ? `${product.name} — TOBOR` : 'Not found — TOBOR'
     setColor(product?.color)
     setQty(1)
   }, [product])
@@ -76,7 +76,7 @@ export default function Product() {
               <div><dt><Ruler size={16} aria-hidden="true" /> Size</dt><dd>{product.size}</dd></div>
               <div><dt><Package size={16} aria-hidden="true" /> Material</dt><dd>{byId(MATERIALS, product.material).name}</dd></div>
               <div><dt><Clock size={16} aria-hidden="true" /> Print time</dt><dd>About {product.printHours} hours</dd></div>
-              <div><dt><Truck size={16} aria-hidden="true" /> Delivery</dt><dd>Ships in 2 to 4 working days. Free over ₹999.</dd></div>
+              <div><dt><Truck size={16} aria-hidden="true" /> Delivery</dt><dd>Ships in 2–4 working days. Free over ₹999.</dd></div>
             </dl>
             <p className="product-desc">{product.description}</p>
           </div>

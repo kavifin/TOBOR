@@ -18,7 +18,7 @@ export function Materials() {
             </thead>
             <tbody>
               {MATERIALS.map((m) => (
-                <tr key={m.id}><th scope="row">{m.name}</th><td>{m.note}</td><td className="num">₹{m.perGram}</td></tr>
+                <tr key={m.id}><th scope="row">{m.name}</th><td>{m.note}</td><td className="mono">₹{m.perGram}</td></tr>
               ))}
             </tbody>
           </table>
@@ -60,7 +60,7 @@ export function Gallery() {
 
 const FAQ = [
   ['I don’t have a 3D file. Can you still print my idea?', 'Yes. Send photos or a sketch with rough measurements. Our designers build the 3D model, send you a sample to check and a quote. Modelling is included in the quote for most everyday parts.'],
-  ['How long does it take?', 'File orders and shop products ship in 2 to 4 working days. Photo requests get a sample and quote within 24 hours, then 2 to 5 days to print depending on quantity.'],
+  ['How long does it take?', 'File orders and shop products ship in 2–4 working days. Photo requests get a sample and quote within 24 hours, then 2–5 days to print depending on quantity.'],
   ['How do I pay?', 'UPI, cards and net banking through a secure payment page, or cash on delivery for shop orders. For photo requests you pay only after you approve the quote.'],
   ['What if the part doesn’t fit?', 'Tell us within 7 days with a photo. If we got a measurement wrong, we reprint it free. If the size you gave changed, we reprint at material cost.'],
   ['Do you print in bulk for businesses?', 'Yes. Quantities over 25 get at least 15% off automatically, and we can quote larger runs, enclosures and jigs by hand. Use the form below or WhatsApp us.'],

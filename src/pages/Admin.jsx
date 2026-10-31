@@ -108,8 +108,8 @@ function RecordCard({ adminKey, record, notes, onDone }) {
                 ))}
               </ul>
               <dl className="spec-list">
-                <div><dt>Notes</dt><dd>{record.details.notes || 'Not given'}</dd></div>
-                <div><dt>Size</dt><dd>{record.details.size || 'Not given'}</dd></div>
+                <div><dt>Notes</dt><dd>{record.details.notes || '—'}</dd></div>
+                <div><dt>Size</dt><dd>{record.details.size || '—'}</dd></div>
                 <div><dt>Copies</dt><dd>{record.details.qty}</dd></div>
                 <div><dt>Material</dt><dd>{record.details.material}</dd></div>
                 <div><dt>Sent from</dt><dd>{record.details.source}</dd></div>

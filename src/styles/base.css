@@ -1,16 +1,3 @@
-/* Hallmark · checked: 2026-10-31 · genre: editorial (inferred: a workshop's shop and story, consumer)
- * floor: 0 FAIL (198 before) · reflex: 4 open (37 the Caveat notes, 39b the drop zone and search pill, 72 closed FAQ answers) · finish review: fix, 3 resolved · fixed: 7, 10, 19, 26, 34, 39, 40, 48, 49, 62, 29 (glass kept only over the 3D film and moving content)
- * structural: printed (44c, 58, 77, 79)
- * built: the project · redesign: polish · v2.0.0 */
-/* Hallmark · dismissed 70 · the photo request panel only shows after POST /api/requests returns, the reference is printed from the reply */
-/* Hallmark · dismissed 29 · the hero card, step captions and film cards sit over the live 3D film; the blur keeps their text readable while it moves */
-/* Hallmark · dismissed 72 · the overflow is answer text inside a closed FAQ details element, not painted until it opens */
-/* Hallmark · dismissed 49 · these three labels are .btn buttons, and .btn sets white-space: nowrap */
-/* Hallmark · dismissed 28a · the gallery sits far below the fold and stays hidden until it has photos, so it is never the LCP */
-/* Hallmark · answered F7 · the header capsule floats over the 3D film and the quantity stepper is a control; both keep the pill */
-/* Hallmark · answered F4 · the quote mode switch and the shelf add button are segmented and icon controls, one filled primary per screen */
-/* Hallmark · answered F15 · 1200px is the reading container; 1240px is the header and mobile nav that frame it */
-
 /* ---------- foundation ---------- */
 :root {
   --font: var(--primitive-font-sans);
@@ -26,7 +13,7 @@
   --header-h: 76px;
   --gutter: clamp(16px, 4vw, 40px);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --shadow-float: 0 24px 60px -18px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+  --shadow-float: 0 24px 60px -18px rgba(60, 40, 20, 0.35);
   color-scheme: light;
 }
 
@@ -36,7 +23,6 @@
   box-sizing: border-box;
 }
 html {
-  overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 16px);
 }
@@ -58,7 +44,21 @@ body {
   color: var(--color-ink);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
+  overflow-x: hidden;
+}
+/* Sunlit studio ambience: warm window light top-left, a hint of green bottom-right.
+   Gives the frosted panels colour to pick up. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vmax 50vmax at 8% 0%, rgba(242, 169, 59, 0.2), transparent 60%),
+    radial-gradient(50vmax 40vmax at 100% 100%, rgba(79, 180, 135, 0.18), transparent 60%),
+    radial-gradient(40vmax 30vmax at 70% 30%, rgba(255, 255, 255, 0.7), transparent 70%),
+    var(--color-bg);
 }
 img,
 svg,
@@ -106,13 +106,9 @@ p {
   text-wrap: pretty;
 }
 :focus-visible {
-  outline: 2px solid var(--color-focus);
+  outline: 3px solid var(--primitive-color-forest-400);
   outline-offset: 2px;
   border-radius: 8px;
-}
-.site-footer :focus-visible,
-.glass-dark :focus-visible {
-  outline-color: var(--color-accent-night);
 }
 .sr-only {
   position: absolute;
@@ -180,17 +176,14 @@ p {
   }
 }
 
-/* ---------- surfaces ----------
-   Glass only where the 3D film or the page moves behind it; everything on the paper is paper. */
-.glass {
+/* ---------- glass ---------- */
+.glass,
+.panel {
   background: var(--glass-bg);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
   border: 1px solid var(--glass-border);
-}
-.panel {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 .glass-dark {
   background: var(--glass-dark-bg);
@@ -200,7 +193,8 @@ p {
   color: var(--color-on-night);
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass {
+  .glass,
+  .panel {
     background: var(--glass-bg-strong);
   }
 }
@@ -240,20 +234,14 @@ p {
 }
 .wm-nozzle {
   position: absolute;
-  inset: 0 -2%;
-  pointer-events: none;
-  animation: wm-nozzle 1.6s var(--ease-out) 0.25s both;
-}
-.wm-nozzle::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: -2%;
+  right: -2%;
   height: 3px;
+  bottom: 0;
   background: var(--color-hot);
   box-shadow: 0 0 16px 3px var(--color-hot);
   border-radius: 2px;
+  animation: wm-nozzle 1.6s var(--ease-out) 0.25s both;
 }
 @keyframes wm-print {
   from {
@@ -265,22 +253,21 @@ p {
 }
 @keyframes wm-nozzle {
   0% {
-    transform: translateY(0);
+    bottom: 0;
     opacity: 1;
   }
   85% {
-    transform: translateY(-100%);
+    bottom: 100%;
     opacity: 1;
   }
   100% {
-    transform: translateY(-100%);
+    bottom: 100%;
     opacity: 0;
   }
 }
 
 /* ---------- buttons ---------- */
 .btn {
-  white-space: nowrap;
   --b-bg: var(--button-bg);
   --b-fg: var(--button-fg);
   --b-border: transparent;
@@ -317,35 +304,35 @@ p {
 }
 /* the main call to action: green with a soft glow, like the approval glow in the story */
 .btn-hot {
-  box-shadow: 0 10px 28px -10px color-mix(in srgb, var(--color-primary) 70%, transparent), inset 0 1px 0 color-mix(in srgb, var(--color-paper-hi) 25%, transparent);
+  box-shadow: 0 10px 28px -10px rgba(18, 112, 72, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 .btn-quiet,
 .btn-glass {
-  --b-bg: color-mix(in srgb, var(--color-paper-hi) 55%, transparent);
+  --b-bg: rgba(255, 255, 255, 0.55);
   --b-fg: var(--color-ink);
-  --b-border: color-mix(in srgb, var(--color-paper-hi) 85%, transparent);
+  --b-border: rgba(255, 255, 255, 0.85);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px -8px color-mix(in srgb, var(--color-shadow) 25%, transparent);
+  box-shadow: 0 4px 16px -8px rgba(60, 40, 20, 0.25);
 }
 .btn-quiet:hover,
 .btn-glass:hover {
-  --b-bg: color-mix(in srgb, var(--color-paper-hi) 85%, transparent);
+  --b-bg: rgba(255, 255, 255, 0.85);
 }
 .btn-ghost-night {
-  --b-bg: color-mix(in srgb, var(--color-paper-hi) 6%, transparent);
+  --b-bg: rgba(255, 255, 255, 0.06);
   --b-fg: var(--color-on-night);
-  --b-border: color-mix(in srgb, var(--color-on-night) 30%, transparent);
+  --b-border: rgba(242, 238, 231, 0.3);
 }
 .btn-ghost-night:hover {
-  --b-bg: color-mix(in srgb, var(--color-paper-hi) 14%, transparent);
+  --b-bg: rgba(255, 255, 255, 0.14);
 }
 .btn-wa {
   --b-bg: var(--whatsapp-bg);
   --b-fg: var(--color-ink);
 }
 .btn-wa:hover {
-  --b-bg: var(--color-live);
+  --b-bg: #3ee07a;
 }
 .btn-block {
   width: 100%;
@@ -362,7 +349,7 @@ p {
   transition: background-color 160ms;
 }
 .icon-btn:hover {
-  background: color-mix(in srgb, var(--color-ink) 7%, transparent);
+  background: rgba(31, 27, 23, 0.07);
 }
 .link-btn {
   display: inline-flex;
@@ -414,11 +401,13 @@ p {
 .field input[type='file'] {
   padding: 10px;
 }
-.field input:focus-visible,
-.field select:focus-visible,
-.field textarea:focus-visible {
-  outline: 2px solid var(--input-focus);
-  outline-offset: 2px;
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--color-primary-soft);
 }
 .field.has-error input,
 .field.has-error select,
@@ -448,7 +437,7 @@ p {
   align-items: center;
   border: 1px solid var(--color-line);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-paper-hi) 70%, transparent);
+  background: rgba(255, 255, 255, 0.7);
   width: fit-content;
 }
 .qty button {
@@ -461,7 +450,7 @@ p {
   border-radius: 999px;
 }
 .qty button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  background: rgba(31, 27, 23, 0.06);
 }
 .qty button:disabled {
   opacity: 0.35;
@@ -484,7 +473,7 @@ p {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+  border: 1px solid rgba(31, 27, 23, 0.18);
   vertical-align: -1px;
   margin-right: 6px;
 }
@@ -495,7 +484,7 @@ p {
   height: 40px;
   border-radius: 50%;
   background: var(--color-success);
-  color: var(--color-paper-hi);
+  color: #fff;
   flex: none;
   box-shadow: 0 0 0 6px var(--color-success-soft);
 }
@@ -540,11 +529,11 @@ p {
   margin: 0 auto;
   padding: 0 10px 0 24px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-surface) 62%, transparent);
+  background: rgba(251, 248, 243, 0.62);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   backdrop-filter: blur(20px) saturate(1.8);
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 80%, transparent);
-  box-shadow: 0 8px 30px -12px color-mix(in srgb, var(--color-shadow) 30%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 30px -12px rgba(60, 40, 20, 0.3);
 }
 .header-logo {
   text-decoration: none;
@@ -566,7 +555,7 @@ p {
   transition: background-color 160ms;
 }
 .header-nav a:hover {
-  background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  background: rgba(31, 27, 23, 0.06);
 }
 .header-nav a.active {
   background: var(--color-primary-soft);
@@ -578,7 +567,7 @@ p {
 }
 .cart-btn {
   position: relative;
-  background: color-mix(in srgb, var(--color-paper-hi) 70%, transparent);
+  background: rgba(255, 255, 255, 0.7);
 }
 .badge {
   position: absolute;
@@ -589,7 +578,7 @@ p {
   padding: 0 5px;
   border-radius: 10px;
   background: var(--color-primary);
-  color: var(--color-paper-hi);
+  color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 20px;
@@ -606,10 +595,10 @@ p {
   margin: 8px auto 0;
   padding: 10px;
   border-radius: 24px;
-  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  background: rgba(251, 248, 243, 0.85);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 80%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: var(--shadow-float);
 }
 @media (max-width: 760px) {
@@ -633,7 +622,6 @@ p {
   position: fixed;
   inset: 0;
   z-index: 60;
-  overflow: clip;
   pointer-events: none;
 }
 .drawer-root.is-open {
@@ -642,7 +630,7 @@ p {
 .drawer-scrim {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--color-ink) 28%, transparent);
+  background: rgba(31, 27, 23, 0.28);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   opacity: 0;
@@ -656,25 +644,22 @@ p {
   top: 10px;
   right: 10px;
   bottom: 10px;
-  width: min(440px, 100% - 20px);
+  width: min(440px, calc(100vw - 20px));
   display: flex;
   flex-direction: column;
   border-radius: 28px;
-  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  background: rgba(251, 248, 243, 0.82);
   -webkit-backdrop-filter: blur(28px) saturate(1.6);
   backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 85%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow: var(--shadow-float);
   transform: translateX(calc(100% + 20px));
-  visibility: hidden;
-  transition: transform 340ms var(--ease-out), visibility 0s linear 340ms;
+  transition: transform 340ms var(--ease-out);
   outline: none;
   overflow: hidden;
 }
 .is-open .drawer {
   transform: none;
-  visibility: visible;
-  transition: transform 340ms var(--ease-out);
 }
 .drawer-head {
   display: flex;
@@ -778,7 +763,7 @@ a.cart-line-name:hover {
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 38%, var(--color-paper-hi) 0%, color-mix(in srgb, var(--tint, var(--color-neutral-tint)) 14%, var(--color-surface-sunk)) 80%);
+  background: radial-gradient(circle at 50% 38%, #ffffff 0%, color-mix(in srgb, var(--tint, #8b9099) 14%, var(--color-surface-sunk)) 80%);
 }
 .thumb img {
   width: 100%;
@@ -788,7 +773,7 @@ a.cart-line-name:hover {
 .thumb-wait {
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--color-paper-hi) 60%, transparent) 50%, transparent 70%);
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.6) 50%, transparent 70%);
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
 }
@@ -812,11 +797,11 @@ a.cart-line-name:hover {
   padding: 0 16px;
   border-radius: 30px;
   background: var(--whatsapp-float);
-  color: var(--color-paper-hi);
+  color: #fff;
   text-decoration: none;
   font-weight: 650;
-  border: 1px solid color-mix(in srgb, var(--color-paper-hi) 35%, transparent);
-  box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--primitive-color-whatsapp-deep) 65%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 30px -8px rgba(18, 140, 74, 0.65);
   transition: transform 200ms var(--ease-out);
 }
 .wa-float:hover {
@@ -841,7 +826,7 @@ a.cart-line-name:hover {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  background: rgba(31, 27, 23, 0.35);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
@@ -850,7 +835,10 @@ a.cart-line-name:hover {
   width: min(440px, 100%);
   padding: 32px 28px 24px;
   border-radius: 28px;
-  background: var(--color-surface);
+  background: rgba(251, 248, 243, 0.88);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-float);
   display: grid;
   gap: 12px;

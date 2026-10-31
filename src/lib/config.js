@@ -8,7 +8,7 @@ export const SITE = {
   address: [`'C' Block, Third Floor, Door No 84`, 'DK Adikesavalu Naidu Complex, Greams Road', 'Thousand Lights, Chennai, Tamil Nadu 600006'],
   mapUrl: 'https://maps.app.goo.gl/kcCiz2jyJf9MUXQz8',
   mapQuery: 'DK Adikesavalu Naidu Complex, Greams Road, Thousand Lights, Chennai, Tamil Nadu 600006',
-  hours: 'Monday to Friday, 10 am to 7 pm',
+  hours: 'Monday to Friday, 10 am – 7 pm',
 }
 
 export const waLink = (text = 'Hi TOBOR, I have a question about 3D printing.') =>

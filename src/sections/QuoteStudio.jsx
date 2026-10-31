@@ -229,7 +229,7 @@ function FileQuote() {
             <ul className="price-facts">
               <li>{money(est.unit)} each{est.discount ? `, ${Math.round(est.discount * 100)}% bulk discount` : ''}</li>
               <li>About {est.grams} g of filament, {est.hours} h of printing per part</li>
-              <li>Ships in 2 to 4 working days, GST included</li>
+              <li>Ships in 2–4 working days, GST included</li>
             </ul>
             {ready.length > 1 && <p className="price-all">All {ready.length} parts: <strong>{money(total)}</strong></p>}
           </div>
