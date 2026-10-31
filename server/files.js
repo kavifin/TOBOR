@@ -1,10 +1,11 @@
 // Uploaded files: customer photos, 3D model files and the team's sample models.
-// With BLOB_READ_WRITE_TOKEN set (Vercel Blob), the browser uploads straight to Blob storage, which gets
-// past Vercel's 4.5 MB request limit, and the server only stores the file's URL. Without it, files go to
+// With BLOB_READ_WRITE_TOKEN set (Vercel Blob), the browser uploads straight to a private Blob store, which
+// gets past Vercel's 4.5 MB request limit; the server stores the file's URL and is the only one that can read it. Without it, files go to
 // server/uploads on this computer. Either way a record keeps a "ref": a Blob URL, or a local file name.
 import path from 'node:path'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
+import { Readable } from 'node:stream'
 import multer from 'multer'
 
 export const filesKind = process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : 'local'
@@ -29,22 +30,44 @@ const isBlobUrl = (ref) => {
 }
 const localPath = (kind, ref) => path.join(UPLOADS, kind, path.basename(String(ref)))
 
+/** Is this a Blob URL in the given folder (photos/, models/ or samples/)? */
+export const blobIn = (kind, ref) => isBlobUrl(ref) && new URL(ref).pathname.startsWith(`/${kind}/`)
+
+const getBlob = async (ref) => {
+  const { get } = await import('@vercel/blob')
+  try {
+    const r = await get(ref, { access: 'private' })
+    return r?.statusCode === 200 ? r : null
+  } catch (err) {
+    console.error('[blob] could not read', ref, err.message)
+    return null
+  }
+}
+
+/** Streams a private Blob file to the browser, through this server. */
+export async function sendBlob(res, ref) {
+  const r = isBlobUrl(ref) ? await getBlob(ref) : null
+  if (!r) return res.status(404).json({ error: 'Not found' })
+  res.set({ 'content-type': r.blob.contentType, 'cache-control': 'private, max-age=3600' })
+  Readable.fromWeb(r.stream).pipe(res)
+}
+
 /** Does this ref point at a file we stored? */
 export const refOk = (kind, ref) => (isBlobUrl(ref) ? true : Boolean(ref) && !/^https?:/i.test(ref) && fs.existsSync(localPath(kind, ref)))
 
 /** The file's bytes, from Blob storage or the local folder. */
 export async function readRef(kind, ref) {
   if (isBlobUrl(ref)) {
-    const res = await fetch(ref)
-    if (!res.ok) throw new Error('A file is missing. Upload it again.')
-    return Buffer.from(await res.arrayBuffer())
+    const r = await getBlob(ref)
+    if (!r) throw Object.assign(new Error('A file is missing. Upload it again.'), { status: 400 })
+    return Buffer.from(await new Response(r.stream).arrayBuffer())
   }
   if (!refOk(kind, ref)) throw new Error('A file is missing. Upload it again.')
   return fs.promises.readFile(localPath(kind, ref))
 }
 
-/** A URL the browser can open for a sample model. */
-export const sampleUrl = (ref) => (isBlobUrl(ref) ? ref : `/files/samples/${path.basename(ref)}`)
+/** A URL the browser can open for a sample model: private Blob files are served through this server. */
+export const sampleUrl = (ref) => (isBlobUrl(ref) ? `/files/sample?u=${encodeURIComponent(ref)}` : `/files/samples/${path.basename(ref)}`)
 
 /** Local mode: multipart upload of one file into server/uploads/<kind>. */
 export function localUpload(kind) {

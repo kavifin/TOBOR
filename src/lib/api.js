@@ -27,7 +27,7 @@ async function uploadFile(file, kind, { adminKey } = {}) {
     const name = file.name.replace(/[^\w.-]+/g, '-').slice(-80) || 'file'
     try {
       const blob = await upload(`${kind}/${name}`, file, {
-        access: 'public',
+        access: 'private',
         handleUploadUrl: '/api/blob',
         clientPayload: JSON.stringify({ kind, type: file.type, key: adminKey }),
         multipart: file.size > 8 * 1024 * 1024,

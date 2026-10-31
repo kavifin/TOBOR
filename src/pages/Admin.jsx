@@ -8,8 +8,9 @@ import { STAGES } from '../../shared/status.js'
 
 const KEY = 'tobor.admin'
 const label = (s) => (s === 'placed' ? 'Awaiting payment' : STAGES.find((x) => x.id === s)?.label ?? s)
-// Blob uploads are full URLs; files on this computer are served through the key-checked admin route
-const fileUrl = (key, folder, ref) => (/^https:/.test(ref) ? ref : `/api/admin/file/${folder}/${ref}?key=${encodeURIComponent(key)}`)
+// files are served through the key-checked admin routes: private Blob files by URL, files on this computer by name
+const fileUrl = (key, folder, ref) =>
+  /^https:/.test(ref) ? `/api/admin/blob?u=${encodeURIComponent(ref)}&key=${encodeURIComponent(key)}` : `/api/admin/file/${folder}/${ref}?key=${encodeURIComponent(key)}`
 
 function StatusControl({ adminKey, record, onDone }) {
   const options = record.type === 'photo' ? ['modelling', 'paid', 'printing', 'printed', 'shipped', 'delivered'] : ['paid', 'printing', 'printed', 'shipped', 'delivered']

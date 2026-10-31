@@ -53,7 +53,7 @@ The site and its API both run on Vercel: the built site is served from Vercel's 
 3. In **Settings → Environment Variables**, add `ADMIN_KEY` (required, the team dashboard password), `PUBLIC_URL` (your domain), the `VITE_*` business details, `BREVO_API_KEY` / `MAIL_FROM` / `BUSINESS_EMAIL`, and the Razorpay and WhatsApp keys when you have them.
 4. Redeploy so the new variables apply.
 
-Locally nothing changes: without `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN`, records go to `server/data/db.json` and uploads to `server/uploads`. Blob uploads use public URLs with random names, so anyone with a link can open that one file.
+Locally nothing changes: without `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN`, records go to `server/data/db.json` and uploads to `server/uploads`. The Blob store is private: customer photos and model files can only be opened through the server (the team dashboard, with the admin key), and a customer's sample model through their tracking page.
 
 ## Make it yours
 
