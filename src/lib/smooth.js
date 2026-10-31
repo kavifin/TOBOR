@@ -11,7 +11,7 @@ let lenis = null
 /** Smooth scrolling for the whole site, synced with GSAP ScrollTrigger. */
 export function startSmoothScroll() {
   if (lenis || prefersReducedMotion()) return () => {}
-  lenis = new Lenis({ lerp: 0.1, smoothWheel: true })
+  lenis = new Lenis({ lerp: 0.075, smoothWheel: true })
   lenis.on('scroll', ScrollTrigger.update)
   const tick = (time) => lenis.raf(time * 1000)
   gsap.ticker.add(tick)

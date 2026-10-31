@@ -3,7 +3,8 @@
 import { store } from './store.js'
 import { whatsappText } from '../shared/status.js'
 
-const { WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_TEMPLATE, PUBLIC_URL = 'http://localhost:5173' } = process.env
+const { WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_TEMPLATE, VERCEL_PROJECT_PRODUCTION_URL } = process.env
+const PUBLIC_URL = process.env.PUBLIC_URL || (VERCEL_PROJECT_PRODUCTION_URL ? `https://${VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:5173')
 
 export function toWhatsAppNumber(phone = '') {
   const digits = phone.replace(/\D/g, '')

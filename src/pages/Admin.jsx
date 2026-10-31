@@ -8,7 +8,8 @@ import { STAGES } from '../../shared/status.js'
 
 const KEY = 'tobor.admin'
 const label = (s) => (s === 'placed' ? 'Awaiting payment' : STAGES.find((x) => x.id === s)?.label ?? s)
-const fileUrl = (key, folder, name) => `/api/admin/file/${folder}/${name}?key=${encodeURIComponent(key)}`
+// Blob uploads are full URLs; files on this computer are served through the key-checked admin route
+const fileUrl = (key, folder, ref) => (/^https:/.test(ref) ? ref : `/api/admin/file/${folder}/${ref}?key=${encodeURIComponent(key)}`)
 
 function StatusControl({ adminKey, record, onDone }) {
   const options = record.type === 'photo' ? ['modelling', 'paid', 'printing', 'printed', 'shipped', 'delivered'] : ['paid', 'printing', 'printed', 'shipped', 'delivered']
@@ -55,14 +56,11 @@ function QuoteControl({ adminKey, record, onDone }) {
   const [error, setError] = useState('')
   async function save(e) {
     e.preventDefault()
-    const fd = new FormData()
-    fd.append('amount', amount)
-    fd.append('note', note)
-    if (file) fd.append('sample', file)
     setBusy(true)
     setError('')
     try {
-      await api.admin.quote(adminKey, record.id, fd)
+      const sampleRef = file ? await api.uploadFile(file, 'samples', { adminKey }) : ''
+      await api.admin.quote(adminKey, record.id, { amount, note, sampleRef })
       onDone()
     } catch (err) {
       setError(err.message)

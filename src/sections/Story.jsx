@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Camera, PenTool, BadgeCheck, IndianRupee, Layers, Truck, ArrowDown, Check } from 'lucide-react'
+import { Camera, PenTool, IndianRupee, Layers, Truck, ArrowDown, Check } from 'lucide-react'
 import { ScrollTrigger, prefersReducedMotion, scrollToY, scrollToEl } from '../lib/smooth.js'
-import { Film } from '../three/film.js'
+import { Film, filmPace } from '../three/film.js'
 import { logosReady } from '../lib/brand.js'
 import { WhatsAppIcon } from '../components/Icons.jsx'
 import Wordmark from '../components/Wordmark.jsx'
@@ -17,14 +17,16 @@ const LAYERS = 250
 // Chapter timings, in seconds of a 10-second film (see src/three/film.js for what happens when).
 const STEPS = [
   { id: 'send', from: 0, to: 1.9, icon: Camera, chip: 'Photos received for TB-R1042', title: 'Send us a photo', body: 'Scan our QR code or upload from the site. Add your name and WhatsApp number, and that’s it.' },
-  { id: 'model', from: 1.9, to: 3.2, icon: PenTool, chip: 'Modelled on our studio PC, sent to the printer', title: 'We build the 3D model', body: 'Our designers turn your photos into a print-ready model on the studio PC, then send it straight to the printer.' },
-  { id: 'quote', from: 3.2, to: 4.0, icon: BadgeCheck, chip: 'Sample approved, quote ₹2,394', title: 'Approve the sample and quote', body: 'You get a sample model and a price. Ask for changes until it’s right. You pay only once you approve.' },
+  { id: 'model', from: 1.9, to: 4.0, icon: PenTool, chip: 'Modelled on our studio PC, sent to the printer', title: 'We build the 3D model', body: 'Our designers turn your photos into a print-ready model on the studio PC, then send it straight to the printer.' },
   { id: 'pay', from: 4.0, to: 5.3, icon: IndianRupee, chip: 'Payment confirmed by UPI', title: 'Pay in seconds', body: 'UPI, card or net banking. Pick the filament and quantity, and your job joins the print queue.' },
   { id: 'print', from: 5.3, to: 7.4, icon: Layers, chip: 'print', title: 'We print it, layer by layer', body: 'PLA+, PETG and more, printed in the quality and quantity you chose, then cleaned and checked.' },
   { id: 'done', from: 7.4, to: 8.4, icon: WhatsAppIcon, chip: 'WhatsApp sent: print complete', title: 'You get a WhatsApp message', body: 'The moment it’s done, your phone and your order page both show the print as complete.' },
   { id: 'ship', from: 8.4, to: 10, icon: Truck, chip: 'Out for delivery, AWB 7281993011', title: 'Out for delivery', body: 'Packed and handed to our courier partner. The tracking number lands on your WhatsApp.' },
 ]
-const toP = (seconds) => HOLD_START + (seconds / VIDEO_SECONDS) * FILM
+// Each moment of the film gets scroll in proportion to how far the camera moves, so the whole
+// film plays at one steady, slow pace (see filmPace in src/three/film.js).
+const { toFilm, toScroll } = filmPace()
+const toP = (seconds) => HOLD_START + toScroll(seconds / VIDEO_SECONDS) * FILM
 const clamp01 = (x) => Math.min(1, Math.max(0, x))
 
 export default function Story() {
@@ -90,9 +92,9 @@ export default function Story() {
       const dt = Math.min(0.05, (now - prev) / 1000)
       prev = now
       if (visible) {
-        current = reduced ? target : current + (target - current) * Math.min(1, dt * 7)
+        current = reduced ? target : current + (target - current) * Math.min(1, dt * 3.5)
         if (Math.abs(target - current) < 0.00005) current = target
-        const t = clamp01((current - HOLD_START) / FILM) * VIDEO_SECONDS
+        const t = toFilm(clamp01((current - HOLD_START) / FILM)) * VIDEO_SECONDS
         film.update(t / VIDEO_SECONDS, dt, reduced)
         if (first) {
           first = false
@@ -116,8 +118,6 @@ export default function Story() {
           }
         }
         section.current.style.setProperty('--hero-out', clamp01(current / (HOLD_START * 0.9)).toFixed(3))
-        section.current.style.setProperty('--quote-in', (clamp01((t - 3.3) / 0.25) * (1 - clamp01((t - 3.85) / 0.2))).toFixed(3))
-        section.current.style.setProperty('--approved', clamp01((t - 3.5) / 0.1).toFixed(3))
         section.current.style.setProperty('--pay-in', (clamp01((t - 4.4) / 0.25) * (1 - clamp01((t - 5.15) / 0.2))).toFixed(3))
       }
       raf = requestAnimationFrame(loop)
@@ -167,16 +167,6 @@ export default function Story() {
         </div>
 
         {/* in-scene glass cards, like floating UI in the film */}
-        <div className="film-card film-quote glass" aria-hidden="true">
-          <p className="film-kicker">Sample 3D model for TB-R1042</p>
-          <dl>
-            <div><dt>Material</dt><dd>PLA+</dd></div>
-            <div><dt>Quality</dt><dd>Fine, 0.12 mm</dd></div>
-            <div><dt>Copies</dt><dd>6</dd></div>
-          </dl>
-          <p className="film-total"><span>Quote</span><strong>₹2,394</strong></p>
-          <p className="film-approved"><Check size={16} /> Approved</p>
-        </div>
         <div className="film-card film-pay glass" aria-hidden="true">
           <p className="film-paid"><span className="tick"><Check size={18} /></span> Payment confirmed</p>
           <dl>

@@ -48,13 +48,12 @@ export default function PhotoRequest({ source = 'web' }) {
       document.querySelector('.photo-request [aria-invalid="true"], .photo-request .drop.has-error')?.focus?.()
       return
     }
-    const fd = new FormData()
-    photos.forEach((p) => fd.append('photos', p.file))
-    Object.entries({ ...form, source }).forEach(([k, v]) => fd.append(k, v))
     setState('sending')
     setServerError('')
     try {
-      const res = await api.sendPhotoRequest(fd)
+      const refs = []
+      for (const p of photos) refs.push(await api.uploadFile(p.file, 'photos'))
+      const res = await api.sendPhotoRequest({ ...form, source, photos: refs })
       setDone(res.id)
       setState('sent')
     } catch (err) {

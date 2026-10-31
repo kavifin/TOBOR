@@ -19,6 +19,41 @@ const ease = (x) => x * x * (3 - 2 * x)
 const seg = (t, a, b) => ease(clamp01((t - a) / (b - a)))
 const mix = THREE.MathUtils.lerp
 
+/** Monotone cubic through (xs, ys) (Fritsch–Carlson): smooth, never runs backwards, at rest at both ends. */
+function monotone(xs, ys) {
+  const n = xs.length
+  const d = []
+  const m = []
+  for (let i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]))
+  m[0] = 0
+  m[n - 1] = 0
+  for (let i = 1; i < n - 1; i++) m[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) {
+      m[i] = m[i + 1] = 0
+      continue
+    }
+    const a = m[i] / d[i]
+    const b = m[i + 1] / d[i]
+    const s = a * a + b * b
+    if (s > 9) {
+      m[i] = (3 / Math.sqrt(s)) * a * d[i]
+      m[i + 1] = (3 / Math.sqrt(s)) * b * d[i]
+    }
+  }
+  return (x) => {
+    if (x <= xs[0]) return ys[0]
+    if (x >= xs[n - 1]) return ys[n - 1]
+    let i = 0
+    while (x > xs[i + 1]) i++
+    const h = xs[i + 1] - xs[i]
+    const u = (x - xs[i]) / h
+    const u2 = u * u
+    const u3 = u2 * u
+    return (2 * u3 - 3 * u2 + 1) * ys[i] + (u3 - 2 * u2 + u) * h * m[i] + (3 * u2 - 2 * u3) * ys[i + 1] + (u3 - u2) * h * m[i + 1]
+  }
+}
+
 const VASE_WHITE = '#efece6'
 const GREEN = '#127048'
 export const FILM_LAYERS = 250
@@ -234,8 +269,8 @@ function phoneScreen() {
       ctx.roundRect(40, 180, 460, 420, 28)
       ctx.fill()
       if (vase.complete && vase.naturalWidth) ctx.drawImage(vase, 70, 190, 400, 400)
-      field(650, 'Name', 'Priya Sharma', clamp01(typing * 2))
-      field(780, 'WhatsApp number', '98400 12345', clamp01(typing * 2 - 1))
+      field(650, 'Name', 'Raghul', clamp01(typing * 2))
+      field(780, 'WhatsApp number', '98765 41230', clamp01(typing * 2 - 1))
       const done = state === 'uploaded'
       ctx.fillStyle = done ? '#0b5636' : '#127048'
       ctx.beginPath()
@@ -734,6 +769,85 @@ function setOpacity(object, o) {
 }
 
 // ---------- the film ----------
+/** The camera's route and timing, shared by the film and by the scroll pacing below. */
+function cameraRig() {
+  // camera path, in film time: [t, position, target]. One smooth curve runs through every point,
+  // so the camera glides past them instead of stopping at each.
+  const cams = [
+    [0, [0.5, 1.35, 3.9], [0.05, 0.92, 0.6]],
+    [0.16, [0.45, 1.2, 3.0], [0, 0.95, 0.7]],
+    [0.215, [-1.2, 2.6, 7.0], [-3.0, 1.2, -0.8]], // phone → PC
+    [0.255, [-3.4, 2.1, 3.7], [-5.3, 1.4, -2.3]], // the model on the monitor
+    [0.3, [3.8, 4.8, 16.2], [3.4, 1.0, -1.6]], // upload: PC → printer, both in view
+    [0.33, [3.5, 4.5, 15.4], [3.2, 1.0, -1.6]],
+    [0.5, [1.6, 1.6, 4.6], [1.6, 0.5, -0.3]], // on to the models: sample and filament
+    [0.6, [8.2, 2.1, 3.0], [6.4, 0.75, -1.2]], // printing
+    [0.72, [7.6, 1.55, 2.0], [6.4, 0.7, -1.2]],
+    [0.79, [0.9, 0.85, 2.6], [0.6, 0.08, 1.3]], // phone on the desk
+    [0.86, [1.9, 2.0, 4.0], [1.2, 0.35, 0.6]], // boxing
+    [0.92, [1.6, 1.85, 3.7], [1.2, 0.4, 0.55]],
+    [1, [3.0, 1.95, 5.0], [2.0, 1.25, -3.0]], // the van in the window
+  ]
+  const camPath = new THREE.CatmullRomCurve3(cams.map(([, p]) => new THREE.Vector3(...p)), false, 'centripetal')
+  const aimPath = new THREE.CatmullRomCurve3(cams.map(([, , g]) => new THREE.Vector3(...g)), false, 'centripetal')
+  // time → distance along each curve, so the camera's speed rises and falls smoothly between points
+  const keyT = cams.map(([t]) => t)
+  const along = (curve) => {
+    const per = 64
+    curve.arcLengthDivisions = (keyT.length - 1) * per
+    const lengths = curve.getLengths()
+    const total = lengths[lengths.length - 1] || 1
+    return monotone(keyT, keyT.map((_, i) => lengths[i * per] / total))
+  }
+  const camAlong = along(camPath)
+  const aimAlong = along(aimPath)
+  return { cams, camPath, aimPath, camAlong, aimAlong }
+}
+
+/**
+ * Scroll pacing: how much scroll each moment of the film gets, so the camera travels at one steady,
+ * slow pace from start to end. Moments where the camera barely moves (the printing) keep a floor of
+ * `still` times the average, so they still play out slowly. Returns film ↔ scroll maps on 0..1.
+ */
+export function filmPace(still = 0.8, samples = 1000) {
+  const { camPath, aimPath, camAlong, aimAlong } = cameraRig()
+  const p = new THREE.Vector3()
+  const g = new THREE.Vector3()
+  const lastP = new THREE.Vector3()
+  const lastG = new THREE.Vector3()
+  const moves = []
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples
+    camPath.getPointAt(clamp01(camAlong(t)), p)
+    aimPath.getPointAt(clamp01(aimAlong(t)), g)
+    if (i) moves.push(p.distanceTo(lastP) + 0.5 * g.distanceTo(lastG)) // where the camera looks counts too
+    lastP.copy(p)
+    lastG.copy(g)
+  }
+  const floor = (moves.reduce((a, b) => a + b, 0) / moves.length) * still
+  const at = [0]
+  for (const m of moves) at.push(at[at.length - 1] + Math.max(m, floor))
+  const total = at[samples]
+  for (let i = 0; i <= samples; i++) at[i] /= total
+  const toScroll = (t) => {
+    const x = clamp01(t) * samples
+    const i = Math.min(samples - 1, Math.floor(x))
+    return at[i] + (at[i + 1] - at[i]) * (x - i)
+  }
+  const toFilm = (s) => {
+    const y = clamp01(s)
+    let lo = 0
+    let hi = samples
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1
+      if (at[mid] <= y) lo = mid
+      else hi = mid
+    }
+    return (lo + (y - at[lo]) / (at[hi] - at[lo])) / samples
+  }
+  return { toFilm, toScroll }
+}
+
 export class Film {
   constructor(canvas) {
     const r = (this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }))
@@ -920,23 +1034,7 @@ export class Film {
     this.boxed.position.copy(BOX_AT)
     s.add(this.box.group, this.boxed)
 
-    // camera path: [t, position, target]
-    this.cams = [
-      [0, [0.5, 1.35, 3.9], [0.05, 0.92, 0.6]],
-      [0.16, [0.45, 1.2, 3.0], [0, 0.95, 0.7]],
-      [0.215, [-1.2, 2.6, 7.0], [-3.0, 1.2, -0.8]], // phone → PC
-      [0.265, [-3.4, 2.1, 3.7], [-5.3, 1.4, -2.3]], // the model on the monitor
-      [0.288, [3.8, 4.8, 16.2], [3.4, 1.0, -1.6]], // upload: PC → printer, both in view
-      [0.322, [3.5, 4.5, 15.4], [3.2, 1.0, -1.6]],
-      [0.4, [-3.6, 2.0, 3.5], [-5.3, 1.4, -2.3]], // approved on screen
-      [0.5, [1.6, 1.6, 4.6], [1.6, 0.5, -0.3]], // paid: sample and filament
-      [0.6, [8.2, 2.1, 3.0], [6.4, 0.75, -1.2]], // printing
-      [0.72, [7.6, 1.55, 2.0], [6.4, 0.7, -1.2]],
-      [0.79, [0.9, 0.85, 2.6], [0.6, 0.08, 1.3]], // phone on the desk
-      [0.86, [1.9, 2.0, 4.0], [1.2, 0.35, 0.6]], // boxing
-      [0.92, [1.6, 1.85, 3.7], [1.2, 0.4, 0.55]],
-      [1, [3.0, 1.95, 5.0], [2.0, 1.25, -3.0]], // the van in the window
-    ]
+    Object.assign(this, cameraRig())
     this.tmp = new THREE.Vector3()
     this.tmpColor = new THREE.Color()
     this.time = 0
@@ -1062,14 +1160,8 @@ export class Film {
   }
 
   cameraAt(t) {
-    const k = this.cams
-    let i = 0
-    while (i < k.length - 2 && t > k[i + 1][0]) i++
-    const [ta, pa, ga] = k[i]
-    const [tb, pb, gb] = k[i + 1]
-    const u = ease(clamp01((t - ta) / (tb - ta)))
-    this.camera.position.set(...pa).lerp(this.tmp.set(...pb), u)
-    this.target.set(...ga).lerp(this.tmp.set(...gb), u)
+    this.camPath.getPointAt(clamp01(this.camAlong(t)), this.camera.position)
+    this.aimPath.getPointAt(clamp01(this.aimAlong(t)), this.target)
     if (this.portrait) this.camera.position.lerp(this.target, -0.25)
     this.camera.lookAt(this.target)
   }
@@ -1103,7 +1195,7 @@ export class Film {
     }
 
     // 2. the photo streams from the phone into the PC; the model builds on the monitor;
-    //    then it streams from the PC into the printer. Then the quote is approved on screen.
+    //    then it streams from the PC into the printer.
     this.flowPoints()
     const pa = clamp01((t - 0.165) / 0.07)
     const pb = clamp01((t - 0.265) / 0.055)
@@ -1129,7 +1221,7 @@ export class Film {
     const onScreen = t > 0.15 && t < 0.5
     if (onScreen) {
       const build = seg(t, 0.21, 0.265)
-      const approved = t > 0.35
+      const approved = false
       cad.plane.constant = mix(0, 1.7, build)
       cad.mat.uniforms.uAlpha.value = seg(t, 0.205, 0.22)
       cad.mat.uniforms.uTime.value = time
@@ -1137,11 +1229,10 @@ export class Film {
       cad.vase.rotation.y = time * 0.4 + t * 6
       cad.wire.visible = build < 1
       const status =
-        t < 0.21 ? 'Receiving 3 photos from Priya…'
+        t < 0.21 ? 'Receiving 3 photos from Raghul…'
         : t < 0.265 ? `Modelling from photos… ${Math.round(build * 100)}%`
         : t < 0.32 ? 'Sending to printer: sliced into 250 layers'
-        : approved ? 'Quote ₹2,394 approved, queued for printing'
-        : 'Sample and quote sent to WhatsApp'
+        : 'Sliced into 250 layers, queued for printing'
       const progress = t < 0.21 ? seg(t, 0.165, 0.21) : t < 0.265 ? build : t < 0.32 ? seg(t, 0.265, 0.32) : 1
       cad.drawUi(status, progress, approved)
       this.renderer.setRenderTarget(cad.rt)

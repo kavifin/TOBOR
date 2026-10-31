@@ -2,6 +2,7 @@
 :root {
   --font: var(--primitive-font-sans);
   --display: var(--primitive-font-display);
+  --font-hero: var(--primitive-font-hero);
   --mono: var(--primitive-font-mono);
   --fs-sm: 0.875rem;
   --fs-base: 1.03rem;
