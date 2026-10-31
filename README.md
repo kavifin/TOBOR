@@ -42,6 +42,19 @@ The Node server then serves both the site and the API on `PORT` (or `API_PORT`).
 | Razorpay | `server/payments.js` |
 | Design tokens (colours, radii, spacing, fonts) | `design/tokens.json` → `src/styles/tokens.css` |
 
+## Deploy to Vercel
+
+The site and its API both run on Vercel: the built site is served from Vercel's CDN, and `api/index.js` runs the Express API (`server/app.js`) as one function. `vercel.json` sends `/api/*` there and every other path to the site.
+
+1. In Vercel, **Add New → Project**, import this GitHub repo. Vercel reads `vercel.json`, so keep the detected settings.
+2. In the project's **Storage** tab, create and connect:
+   - a **Neon** Postgres database: sets `DATABASE_URL`; tables are created on first use
+   - a **Blob** store: sets `BLOB_READ_WRITE_TOKEN`; photos and models upload straight from the browser, past Vercel's 4.5 MB request limit
+3. In **Settings → Environment Variables**, add `ADMIN_KEY` (required, the team dashboard password), `PUBLIC_URL` (your domain), the `VITE_*` business details, `BREVO_API_KEY` / `MAIL_FROM` / `BUSINESS_EMAIL`, and the Razorpay and WhatsApp keys when you have them.
+4. Redeploy so the new variables apply.
+
+Locally nothing changes: without `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN`, records go to `server/data/db.json` and uploads to `server/uploads`. Blob uploads use public URLs with random names, so anyone with a link can open that one file.
+
 ## Make it yours
 
 1. **Business details**: copy `.env.example` to `.env` and set `VITE_WHATSAPP_NUMBER`, `VITE_CONTACT_PHONE`, `VITE_CONTACT_EMAIL`, `VITE_ADDRESS`.

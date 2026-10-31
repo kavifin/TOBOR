@@ -1,13 +1,11 @@
 // Server-side STL volume check, so instant prices for STL uploads can't be tampered with.
-import fs from 'node:fs'
 
 function signedVolume(ax, ay, az, bx, by, bz, cx, cy, cz) {
   return (ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx)) / 6
 }
 
-/** Returns volume in cm³ (STL units assumed mm), or null if the file isn't a readable STL. */
-export function stlVolumeCm3(filePath) {
-  const buf = fs.readFileSync(filePath)
+/** Returns volume in cm³ (STL units assumed mm) from the file's bytes, or null if it isn't a readable STL. */
+export function stlVolumeCm3(buf) {
   if (buf.length < 84) return null
   const count = buf.readUInt32LE(80)
   let vol = 0
