@@ -1,0 +1,97 @@
+/* Design Tokens - Auto-generated */
+/* Do not edit directly - modify tokens.json instead */
+
+/* === PRIMITIVES === */
+:root {
+  --primitive-color-sand-50: #FBF8F3;
+  --primitive-color-sand-100: #F4EEE5;
+  --primitive-color-sand-200: #E7DDCF;
+  --primitive-color-sand-300: #CDBFAC;
+  --primitive-color-sand-500: #6E6358;
+  --primitive-color-sand-800: #2E2823;
+  --primitive-color-sand-900: #1F1B17;
+  --primitive-color-forest-100: #DFF0E6;
+  --primitive-color-forest-400: #4FB487;
+  --primitive-color-forest-600: #127048;
+  --primitive-color-forest-700: #0B5636;
+  --primitive-color-glow-100: #FCEBD0;
+  --primitive-color-glow-500: #F2A93B;
+  --primitive-color-glow-600: #8A5600;
+  --primitive-color-studio-50: #F2EEE7;
+  --primitive-color-studio-300: #A6B6B3;
+  --primitive-color-studio-800: #1A2A2D;
+  --primitive-color-studio-950: #0E1719;
+  --primitive-color-red-100: #F8E1DD;
+  --primitive-color-red-600: #B83A2E;
+  --primitive-color-whatsapp: #25D366;
+  --primitive-color-whatsapp-deep: #128C4A;
+  --primitive-color-white: #FFFFFF;
+  --primitive-radius-sm: 10px;
+  --primitive-radius-md: 14px;
+  --primitive-radius-lg: 24px;
+  --primitive-radius-xl: 32px;
+  --primitive-radius-full: 999px;
+  --primitive-space-1: 4px;
+  --primitive-space-2: 8px;
+  --primitive-space-3: 12px;
+  --primitive-space-4: 16px;
+  --primitive-space-5: 24px;
+  --primitive-space-6: 32px;
+  --primitive-space-7: 48px;
+  --primitive-space-8: 64px;
+  --primitive-space-9: 96px;
+  --primitive-space-10: 144px;
+  --primitive-font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
+  --primitive-font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --primitive-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* === SEMANTIC === */
+:root {
+  --color-bg: #F4EEE5;
+  --color-surface: #FBF8F3;
+  --color-surface-sunk: #E7DDCF;
+  --color-ink: #1F1B17;
+  --color-ink-muted: #6E6358;
+  --color-line: #E7DDCF;
+  --color-primary: #127048;
+  --color-primary-hover: #0B5636;
+  --color-primary-soft: #DFF0E6;
+  --color-on-primary: #FFFFFF;
+  --color-hot: #F2A93B;
+  --color-hot-ink: #8A5600;
+  --color-hot-soft: #FCEBD0;
+  --color-success: #127048;
+  --color-success-soft: #DFF0E6;
+  --color-danger: #B83A2E;
+  --color-danger-soft: #F8E1DD;
+  --color-night: #0E1719;
+  --color-night-raised: #1A2A2D;
+  --color-on-night: #F2EEE7;
+  --color-on-night-muted: #A6B6B3;
+  --color-accent-night: #4FB487;
+}
+
+/* === COMPONENTS === */
+:root {
+  --button-bg: #127048;
+  --button-bg-hover: #0B5636;
+  --button-fg: #FFFFFF;
+  --button-radius: 999px;
+  --panel-bg: rgba(251, 248, 243, 0.62);
+  --panel-border: rgba(255, 255, 255, 0.75);
+  --panel-radius: 24px;
+  --glass-bg: rgba(251, 248, 243, 0.58);
+  --glass-bg-strong: rgba(251, 248, 243, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-dark-bg: rgba(14, 23, 25, 0.5);
+  --glass-dark-border: rgba(255, 255, 255, 0.14);
+  --glass-blur: 18px;
+  --glass-shadow: 0 10px 40px -12px rgba(70, 48, 22, 0.22);
+  --input-bg: rgba(255, 255, 255, 0.78);
+  --input-border: #E7DDCF;
+  --input-focus: #127048;
+  --input-radius: 10px;
+  --whatsapp-bg: #25D366;
+  --whatsapp-float: #128C4A;
+}
