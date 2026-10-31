@@ -57,6 +57,12 @@
   margin: 0 0 0.3em;
   line-height: 0.9;
 }
+/* the hero speaks in Rubik: soft corners, like a printed part */
+.hero-card,
+.hero-card .btn,
+.story-cue {
+  font-family: var(--font-hero);
+}
 .story-lede {
   font-size: clamp(1.15rem, 0.95rem + 0.7vw, 1.45rem);
   line-height: 1.45;

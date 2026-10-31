@@ -45,6 +45,7 @@
   --primitive-font-sans: 'Instrument Sans', system-ui, sans-serif;
   --primitive-font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --primitive-font-hand: 'Caveat', cursive;
+  --primitive-font-hero: 'Rubik', 'Instrument Sans', system-ui, sans-serif;
 }
 
 /* === SEMANTIC === */
