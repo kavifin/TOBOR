@@ -6,13 +6,13 @@ import { useCart } from '../lib/cart.jsx'
 import { byId, COLORS } from '../../shared/pricing.js'
 import { CATEGORIES } from '../../shared/products.js'
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, eager = false }) {
   const { add } = useCart()
   return (
     <article className="product-card">
       <Link to={`/shop/${product.slug}`} className="product-card-link">
         <div className="product-card-media">
-          <Thumb product={product} alt={`${product.name}, 3D printed`} />
+          <Thumb product={product} alt={`${product.name}, 3D printed`} eager={eager} />
           {product.tags.includes('bestseller') && <span className="tag">Bestseller</span>}
           {product.tags.includes('new') && <span className="tag tag-new">New</span>}
         </div>

@@ -65,7 +65,7 @@ export default function Shop() {
 
         <p className="muted small" aria-live="polite">{list.length} {list.length === 1 ? 'product' : 'products'}</p>
         {list.length ? (
-          <div className="product-grid">{list.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+          <div className="product-grid">{list.map((p, i) => <ProductCard key={p.id} product={p} eager={i < 4} />)}</div>
         ) : (
           <div className="empty">
             <p><strong>No products match “{q}”.</strong></p>

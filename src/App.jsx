@@ -16,7 +16,7 @@ const Track = lazy(() => import('./pages/Track.jsx'))
 const Send = lazy(() => import('./pages/Send.jsx'))
 const Admin = lazy(() => import('./pages/Admin.jsx'))
 
-const TITLES = { '/': 'TOBOR — 3D printing from a photo', '/shop': 'Shop — TOBOR', '/cart': 'Cart — TOBOR', '/checkout': 'Checkout — TOBOR', '/track': 'Track your order — TOBOR', '/send': 'Send photos — TOBOR', '/admin': 'Team dashboard — TOBOR' }
+const TITLES = { '/': 'TOBOR: 3D printing from a photo', '/shop': 'Shop | TOBOR', '/cart': 'Cart | TOBOR', '/checkout': 'Checkout | TOBOR', '/track': 'Track your order | TOBOR', '/send': 'Send photos | TOBOR', '/admin': 'Team dashboard | TOBOR' }
 
 export default function App() {
   const { pathname, hash } = useLocation()

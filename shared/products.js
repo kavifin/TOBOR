@@ -62,7 +62,7 @@ export const PRODUCTS = [
     shape: 'penHive', color: 'yellow', colors: ['yellow', 'black', 'white', 'green'], material: 'pla',
     size: '90 × 80 × 100 mm', printHours: 4,
     summary: 'Seven hexagonal cells at staggered heights.',
-    description: 'Each cell holds 4–6 pens. Felt pads included for the base.',
+    description: 'Each cell holds 4 to 6 pens. Felt pads included for the base.',
     tags: [],
   },
   {
@@ -85,7 +85,7 @@ export const PRODUCTS = [
     id: 'p-cable-clips', slug: 'cable-clips', name: 'Cable clips (pack of 10)', category: 'maker', price: 149,
     shape: 'cableClip', color: 'white', colors: ['white', 'black', 'grey'], material: 'tpu',
     size: '24 × 20 × 12 mm each', printHours: 2,
-    summary: 'Flexible TPU clips for 3–6 mm cables. Stick on with the included tape.',
+    summary: 'Flexible TPU clips for 3 to 6 mm cables. Stick on with the included tape.',
     description: 'Flex enough to snap cables in and out hundreds of times without cracking.',
     tags: [],
   },

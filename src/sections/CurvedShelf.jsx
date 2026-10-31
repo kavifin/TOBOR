@@ -203,12 +203,11 @@ export default function CurvedShelf() {
   return (
     <section ref={section} className={`shelf ${entered ? 'is-in' : ''}`} aria-labelledby="shelf-title">
       <div className="shelf-head container">
-        <p className="shelf-badge">Printed to order, shipped in 2–4 days</p>
         <h2 id="shelf-title" className="shelf-title">
           <span>Ready to print,</span>
           <span>ready to ship</span>
         </h2>
-        <p className="shelf-sub">Designs we’ve tested and printed hundreds of times. Pick a colour and it leaves our workshop within days.</p>
+        <p className="shelf-sub">Designs we’ve tested and printed hundreds of times. Pick a colour: we print it to order and ship it in 2 to 4 days.</p>
 
         <svg className="doodle doodle-slash" viewBox="0 0 40 40" aria-hidden="true">
           <path d="M14 8 L6 32 M30 8 L22 32" />

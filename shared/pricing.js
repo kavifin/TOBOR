@@ -29,8 +29,8 @@ export const QUALITIES = [
 ]
 
 export const SHIPPING = [
-  { id: 'standard', name: 'Standard delivery', days: '4–6 working days', price: 79, freeOver: 999 },
-  { id: 'express', name: 'Express delivery', days: '1–3 working days', price: 179, freeOver: null },
+  { id: 'standard', name: 'Standard delivery', days: '4 to 6 working days', price: 79, freeOver: 999 },
+  { id: 'express', name: 'Express delivery', days: '1 to 3 working days', price: 179, freeOver: null },
 ]
 
 export const PAYMENT_METHODS = [

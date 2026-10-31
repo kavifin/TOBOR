@@ -25,7 +25,7 @@
   --primitive-color-red-600: #B83A2E;
   --primitive-color-whatsapp: #25D366;
   --primitive-color-whatsapp-deep: #128C4A;
-  --primitive-color-white: #FFFFFF;
+  --primitive-color-white: #FFFDF9;
   --primitive-radius-sm: 10px;
   --primitive-radius-md: 14px;
   --primitive-radius-lg: 24px;
@@ -44,6 +44,7 @@
   --primitive-font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
   --primitive-font-sans: 'Instrument Sans', system-ui, sans-serif;
   --primitive-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --primitive-font-hand: 'Caveat', cursive;
 }
 
 /* === SEMANTIC === */
@@ -57,7 +58,7 @@
   --color-primary: #127048;
   --color-primary-hover: #0B5636;
   --color-primary-soft: #DFF0E6;
-  --color-on-primary: #FFFFFF;
+  --color-on-primary: #FFFDF9;
   --color-hot: #F2A93B;
   --color-hot-ink: #8A5600;
   --color-hot-soft: #FCEBD0;
@@ -70,16 +71,32 @@
   --color-on-night: #F2EEE7;
   --color-on-night-muted: #A6B6B3;
   --color-accent-night: #4FB487;
+  --color-paper-hi: #FFFDF9;
+  --color-focus: #0B5636;
+  --color-field-edge: #8E8376;
+  --color-shadow: #3C2814;
+  --color-moss: #1F3A33;
+  --color-screen: #0A1029;
+  --color-screen-line: #A9B0C9;
+  --color-danger-night: #C8312A;
+  --color-danger-on-night: #FF9B94;
+  --color-danger-on-night-soft: #FFC9C4;
+  --color-live: #3EE07A;
+  --color-neutral-tint: #8B9099;
+  --color-sand-120: #F5EFE6;
+  --color-sand-150: #E9DFD1;
+  --color-sand-250: #D9CBB7;
+  --color-whatsapp-ink: #0E7A3F;
 }
 
 /* === COMPONENTS === */
 :root {
   --button-bg: #127048;
   --button-bg-hover: #0B5636;
-  --button-fg: #FFFFFF;
+  --button-fg: #FFFDF9;
   --button-radius: 999px;
-  --panel-bg: rgba(251, 248, 243, 0.62);
-  --panel-border: rgba(255, 255, 255, 0.75);
+  --panel-bg: #FBF8F3;
+  --panel-border: #E7DDCF;
   --panel-radius: 24px;
   --glass-bg: rgba(251, 248, 243, 0.58);
   --glass-bg-strong: rgba(251, 248, 243, 0.82);
@@ -88,10 +105,10 @@
   --glass-dark-border: rgba(255, 255, 255, 0.14);
   --glass-blur: 18px;
   --glass-shadow: 0 10px 40px -12px rgba(70, 48, 22, 0.22);
-  --input-bg: rgba(255, 255, 255, 0.78);
-  --input-border: #E7DDCF;
-  --input-focus: #127048;
+  --input-bg: #FFFDF9;
+  --input-border: #8E8376;
+  --input-focus: #0B5636;
   --input-radius: 10px;
   --whatsapp-bg: #25D366;
-  --whatsapp-float: #128C4A;
+  --whatsapp-float: #0E7A3F;
 }

@@ -3,7 +3,7 @@ import { renderThumb } from '../three/thumbs.js'
 import { byId, COLORS } from '../../shared/pricing.js'
 
 /** Product image: a real photo when the product has one, else a render of its 3D model. */
-export default function Thumb({ product, color, alt = '', className = '' }) {
+export default function Thumb({ product, color, alt = '', className = '', eager = false }) {
   const hex = byId(COLORS, color ?? product.color)?.hex
   const [src, setSrc] = useState(product.photos?.[0] ?? null)
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function Thumb({ product, color, alt = '', className = '' }) {
   }, [product, hex])
   return (
     <div className={`thumb ${className}`} style={{ '--tint': hex }}>
-      {src ? <img src={src} alt={alt} loading="lazy" /> : <span className="thumb-wait" aria-hidden="true" />}
+      {src ? <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : 'auto'} /> : <span className="thumb-wait" aria-hidden="true" />}
     </div>
   )
 }
