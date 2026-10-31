@@ -72,8 +72,8 @@ Locally nothing changes: without `DATABASE_URL` and `BLOB_READ_WRITE_TOKEN`, rec
 
 - **Look "Sunlit workshop"**: warm daylight neutrals (`#F4EEE5` page, `#1F1B17` ink), forest green `#127048` for actions and approvals, nozzle-glow amber `#F2A93B`, and a dark hologram-studio teal `#0E1719` for the footer and price card.
 - **Glass**: the header, story captions, cards, drawer, modals, FAQ and product cards are frosted glass (`.glass` / `.panel`, tokens `--glass-*`) over a soft sunlit gradient background.
-- **Type**: Bricolage Grotesque for headlines and prices, Instrument Sans for interface and reading text, JetBrains Mono only for order IDs.
-- **Signature**: the TOBOR wordmark is built from print layers and prints itself once on load. The scroll film follows one spiral vase through the real workflow: phone upload, particles forming a hologram, green approval, payment, printing layer by layer, a WhatsApp "100% completed" message, then the labelled box with the courier van outside.
+- **Type**: Bricolage Grotesque for headlines and prices, Instrument Sans for interface and reading text, Rubik for the hero's sentence and buttons, JetBrains Mono only for order IDs.
+- **Signature**: the TOBOR wordmark is built from print layers and prints itself once on load. The scroll film follows one print, the Circle of Love sculpture, through the real workflow in six steps: the photo sent from a phone, the model built on the studio PC and streamed to the printer, payment, printing layer by layer, a WhatsApp "print complete" message, then the boxed print with the courier van in the window. The camera glides along one smooth path, and `filmPace()` gives each moment scroll in proportion to how far the camera moves, so the whole film plays at one steady pace.
 - The film is rendered live with three.js, not a video file, so it stays sharp at any size and downloads far less. Chapter timings live in `STEPS` in `src/sections/Story.jsx`; what happens on screen at each moment lives in `Film.update()` in `src/three/film.js`.
 - Respects `prefers-reduced-motion` (no smooth-scroll inertia, no idle motion; the film still follows the scrollbar).
 

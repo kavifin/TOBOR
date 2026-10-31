@@ -67,7 +67,6 @@
   --color-danger: #B83A2E;
   --color-danger-soft: #F8E1DD;
   --color-night: #0E1719;
-  --color-night-raised: #1A2A2D;
   --color-on-night: #F2EEE7;
   --color-on-night-muted: #A6B6B3;
   --color-accent-night: #4FB487;
@@ -79,8 +78,6 @@
   --button-bg-hover: #0B5636;
   --button-fg: #FFFFFF;
   --button-radius: 999px;
-  --panel-bg: rgba(251, 248, 243, 0.62);
-  --panel-border: rgba(255, 255, 255, 0.75);
   --panel-radius: 24px;
   --glass-bg: rgba(251, 248, 243, 0.58);
   --glass-bg-strong: rgba(251, 248, 243, 0.82);

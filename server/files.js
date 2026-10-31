@@ -19,7 +19,7 @@ export const KINDS = {
   samples: { max: 100 * MB, ok: (name) => MODEL_EXT.test(name), error: 'Model files must be STL, OBJ, 3MF or STEP.' },
 }
 
-export const isBlobUrl = (ref) => {
+const isBlobUrl = (ref) => {
   try {
     const u = new URL(ref)
     return u.protocol === 'https:' && u.hostname.endsWith('.blob.vercel-storage.com')

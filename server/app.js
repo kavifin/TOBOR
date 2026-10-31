@@ -1,7 +1,6 @@
 // The TOBOR API as an Express app. server/index.js runs it on this computer; api/index.js runs it on Vercel.
 import 'dotenv/config'
 import express from 'express'
-import path from 'node:path'
 import os from 'node:os'
 import crypto from 'node:crypto'
 import { store } from './store.js'
@@ -15,7 +14,7 @@ import { estimatePart, orderTotals, byId, MATERIALS, COLORS, QUALITIES, SHIPPING
 
 export const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)
 export const ADMIN_KEY = process.env.ADMIN_KEY || (isProd ? null : 'tobor-admin')
-export const siteUrl = () =>
+const siteUrl = () =>
   process.env.PUBLIC_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null)
 
 const app = express()

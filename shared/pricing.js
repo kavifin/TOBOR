@@ -45,7 +45,7 @@ const MIN_PER_PART = 149
 
 export const byId = (list, id) => list.find((x) => x.id === id)
 
-export function qtyDiscount(qty) {
+function qtyDiscount(qty) {
   if (qty >= 25) return 0.15
   if (qty >= 10) return 0.1
   if (qty >= 5) return 0.05

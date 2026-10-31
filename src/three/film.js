@@ -1,5 +1,5 @@
 // TOBOR's scroll film: a sunlit maker studio where one printed piece goes through the whole workflow.
-// photo upload on a phone → modelled on the studio PC → uploaded to the printer → approved → paid
+// photo upload on a phone → modelled on the studio PC → uploaded to the printer → paid
 // → printed layer by layer → WhatsApp "print complete" → boxed while the courier van pulls up.
 // `update(t)` maps film time t ∈ [0, 1] to the scene and is pure, so scrolling back plays it in reverse.
 // Real models (phone, PC, Bambu printer, the "Circle of Love" piece) stream in after start;
@@ -12,7 +12,7 @@ import { printMaterial } from './materials.js'
 import { renderThumb, renderObjectThumb } from './thumbs.js'
 import { logos, drawLogo } from '../lib/brand.js'
 import { makeVan } from './van.js'
-import { loadPhone, loadPc, loadPrinter, loadPiece, UNITS_PER_METRE } from './models.js'
+import { loadPhone, loadPc, loadPrinter, loadPiece } from './models.js'
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x))
 const ease = (x) => x * x * (3 - 2 * x)
@@ -55,8 +55,7 @@ function monotone(xs, ys) {
 }
 
 const VASE_WHITE = '#efece6'
-const GREEN = '#127048'
-export const FILM_LAYERS = 250
+const FILM_LAYERS = 250
 
 // Studio layout (desk top is y = 0): PC on the left, window in the middle, printer on the right.
 const WIN_X = 2.2 // window centre
@@ -697,8 +696,8 @@ function makeCad() {
   const ui = new THREE.CanvasTexture(c)
   ui.colorSpace = THREE.SRGBColorSpace
   let key = ''
-  function drawUi(status, progress, approved) {
-    const k = `${status}|${Math.round(progress * 20)}|${approved}`
+  function drawUi(status, progress) {
+    const k = `${status}|${Math.round(progress * 20)}`
     if (k === key) return
     key = k
     ctx.clearRect(0, 0, 1024, 576)
@@ -718,22 +717,13 @@ function makeCad() {
       ctx.roundRect(15, 66 + i * 56, 28, 28, 7)
       ctx.fill()
     }
-    ctx.fillStyle = approved ? '#4fb487' : '#f2eee7'
+    ctx.fillStyle = '#f2eee7'
     ctx.font = '600 20px "Instrument Sans", system-ui, sans-serif'
     ctx.fillText(status, 76, 556)
     ctx.fillStyle = 'rgba(166,182,179,0.25)'
     ctx.fillRect(640, 543, 360, 8)
-    ctx.fillStyle = approved ? '#4fb487' : '#f2a93b'
+    ctx.fillStyle = '#f2a93b'
     ctx.fillRect(640, 543, 360 * progress, 8)
-    if (approved) {
-      ctx.fillStyle = '#127048'
-      ctx.beginPath()
-      ctx.roundRect(744, 66, 256, 52, 26)
-      ctx.fill()
-      ctx.fillStyle = '#ffffff'
-      ctx.font = '700 22px "Instrument Sans", system-ui, sans-serif'
-      ctx.fillText('✓  Quote approved', 772, 100)
-    }
     ui.needsUpdate = true
   }
   return { scene, camera, rt, ui, drawUi, vase, mat, plane, wire }
@@ -801,7 +791,7 @@ function cameraRig() {
   }
   const camAlong = along(camPath)
   const aimAlong = along(aimPath)
-  return { cams, camPath, aimPath, camAlong, aimAlong }
+  return { camPath, aimPath, camAlong, aimAlong }
 }
 
 /**
@@ -1221,11 +1211,10 @@ export class Film {
     const onScreen = t > 0.15 && t < 0.5
     if (onScreen) {
       const build = seg(t, 0.21, 0.265)
-      const approved = false
       cad.plane.constant = mix(0, 1.7, build)
       cad.mat.uniforms.uAlpha.value = seg(t, 0.205, 0.22)
       cad.mat.uniforms.uTime.value = time
-      cad.mat.uniforms.uColor.value.set(approved ? '#7dffc4' : '#5cffb5')
+      cad.mat.uniforms.uColor.value.set('#5cffb5')
       cad.vase.rotation.y = time * 0.4 + t * 6
       cad.wire.visible = build < 1
       const status =
@@ -1234,7 +1223,7 @@ export class Film {
         : t < 0.32 ? 'Sending to printer: sliced into 250 layers'
         : 'Sliced into 250 layers, queued for printing'
       const progress = t < 0.21 ? seg(t, 0.165, 0.21) : t < 0.265 ? build : t < 0.32 ? seg(t, 0.265, 0.32) : 1
-      cad.drawUi(status, progress, approved)
+      cad.drawUi(status, progress)
       this.renderer.setRenderTarget(cad.rt)
       this.renderer.render(cad.scene, cad.camera)
       this.renderer.setRenderTarget(null)
