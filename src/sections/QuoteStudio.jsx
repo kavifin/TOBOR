@@ -10,7 +10,7 @@ import { WhatsAppIcon } from '../components/Icons.jsx'
 import { MATERIALS, COLORS, QUALITIES, estimatePart, byId } from '../../shared/pricing.js'
 import { useCart } from '../lib/cart.jsx'
 import { api } from '../lib/api.js'
-import { money, fileSize } from '../lib/format.js'
+import { money, fileSize, localId } from '../lib/format.js'
 import { waLink } from '../lib/config.js'
 
 const MODEL_FILE = /\.(stl|obj|3mf|step|stp)$/i
@@ -41,7 +41,7 @@ function FileQuote() {
         setError(`${file.name} is over 100 MB. Send it on WhatsApp and we’ll quote it by hand.`)
         continue
       }
-      fresh.push({ id: crypto.randomUUID(), file, name: file.name, size: file.size, status: previewable(file.name) ? 'loading' : 'manual', cfg: { ...DEFAULT_CFG } })
+      fresh.push({ id: localId(), file, name: file.name, size: file.size, status: previewable(file.name) ? 'loading' : 'manual', cfg: { ...DEFAULT_CFG } })
     }
     if (!fresh.length) return
     setFiles((fs) => [...fs, ...fresh])

@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js'
 
 // Film units per real-world metre: the 0.147 m phone is 0.82 units tall, like the vase scale.
-export const UNITS_PER_METRE = 5.6
+const UNITS_PER_METRE = 5.6
 
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
 

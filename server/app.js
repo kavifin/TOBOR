@@ -1,7 +1,6 @@
 // The TOBOR API as an Express app. server/index.js runs it on this computer; api/index.js runs it on Vercel.
 import 'dotenv/config'
 import express from 'express'
-import path from 'node:path'
 import os from 'node:os'
 import crypto from 'node:crypto'
 import { store } from './store.js'
@@ -9,13 +8,13 @@ import { notifyCustomer } from './notify.js'
 import { createPayment, verifyPayment, paymentsLive } from './payments.js'
 import { stlVolumeCm3 } from './stl.js'
 import { sendEnquiryEmails } from './mail.js'
-import { filesKind, KINDS, refOk, readRef, sampleUrl, localUpload, localFile, samplesDir, blobToken } from './files.js'
+import { filesKind, KINDS, refOk, readRef, sampleUrl, localUpload, localFile, samplesDir, blobToken, blobIn, sendBlob } from './files.js'
 import { productById } from '../shared/products.js'
 import { estimatePart, orderTotals, byId, MATERIALS, COLORS, QUALITIES, SHIPPING, PAYMENT_METHODS } from '../shared/pricing.js'
 
 export const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)
 export const ADMIN_KEY = process.env.ADMIN_KEY || (isProd ? null : 'tobor-admin')
-export const siteUrl = () =>
+const siteUrl = () =>
   process.env.PUBLIC_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null)
 
 const app = express()
@@ -273,6 +272,12 @@ app.post('/api/enquiries', route(async (req, res) => {
 }))
 
 if (filesKind === 'local') app.use('/files/samples', express.static(samplesDir, { maxAge: '1d' }))
+// the sample model a customer opens from their tracking page (only files in the samples/ folder)
+app.get('/files/sample', route(async (req, res) => {
+  const ref = clean(req.query.u, 600)
+  if (filesKind !== 'blob' || !blobIn('samples', ref)) return fail(res, 404, 'Not found')
+  await sendBlob(res, ref)
+}))
 
 // ---------- team dashboard API ----------
 const admin = express.Router()
@@ -282,6 +287,11 @@ admin.use((req, res, next) => {
   next()
 })
 admin.get('/summary', route(async (_req, res) => res.json(await store.all())))
+admin.get('/blob', route(async (req, res) => {
+  const ref = clean(req.query.u, 600)
+  if (!Object.keys(KINDS).some((kind) => blobIn(kind, ref))) return fail(res, 404, 'Not found')
+  await sendBlob(res, ref)
+}))
 admin.get('/file/:folder/:name', (req, res) => {
   if (!KINDS[req.params.folder]) return fail(res, 404, 'Not found')
   res.sendFile(localFile(req.params.folder, req.params.name), (err) => err && !res.headersSent && fail(res, 404, 'Not found'))

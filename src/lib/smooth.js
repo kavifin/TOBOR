@@ -34,4 +34,4 @@ export function scrollToEl(el, offset = -72) {
   else el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
 }
 
-export { gsap, ScrollTrigger }
+export { ScrollTrigger }

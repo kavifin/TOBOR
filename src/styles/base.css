@@ -185,13 +185,6 @@ p {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
-.glass-dark {
-  background: var(--glass-dark-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
-  border: 1px solid var(--glass-dark-border);
-  color: var(--color-on-night);
-}
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass,
   .panel {
@@ -318,14 +311,6 @@ p {
 .btn-quiet:hover,
 .btn-glass:hover {
   --b-bg: rgba(255, 255, 255, 0.85);
-}
-.btn-ghost-night {
-  --b-bg: rgba(255, 255, 255, 0.06);
-  --b-fg: var(--color-on-night);
-  --b-border: rgba(242, 238, 231, 0.3);
-}
-.btn-ghost-night:hover {
-  --b-bg: rgba(255, 255, 255, 0.14);
 }
 .btn-wa {
   --b-bg: var(--whatsapp-bg);
