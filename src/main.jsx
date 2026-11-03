@@ -8,6 +8,7 @@ import './styles/story.css'
 import './styles/sections.css'
 import './styles/shelf.css'
 import './styles/pages.css'
+import './styles/design.css'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>

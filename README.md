@@ -42,6 +42,16 @@ The Node server then serves both the site and the API on `PORT` (or `API_PORT`).
 | Razorpay | `server/payments.js` |
 | Design tokens (colours, radii, spacing, fonts) | `design/tokens.json` → `src/styles/tokens.css` |
 
+## Design your own
+
+Personalised prints a customer configures in the browser, with a live 3D preview, the finished size in mm and the price before ordering. Tabs in the hero hold a compact designer; the full "Design your own" section (`/#design`, or `/#<style>` such as `/#bubble`) has a style showcase and the designer.
+
+- **14 styles plus Mini-Me**, in `shared/designs.js`: five keychains (classic tag, bubble letters, wavy band, letter tiles, name beads), four desk pieces (name stand, love stand with a heart, plaque with a shape choice, LED name lamp), three small gifts (bookmark, plant stake, name magnet), and two photo gifts (photo magnet, photo stand) that show the uploaded photo in the preview. Mini-Me is modelled by the team from the customer's photos and approved on WhatsApp before printing (the order line carries `sampleFirst`).
+- **Showcase and gift finder**: every style rendered with the typed name (`src/components/StyleThumb.jsx` renders them off screen, one at a time), category filters, and a share link (`/?for=<name>#design`) that fills the name in for the person it is sent to.
+- **Designer**: five fonts, colour combinations, nine colours, sizes, per-style options, a matching set of several names, a coin for scale and preview backdrops. The 3D models are built live from the text in `src/three/text3d.js`.
+
+Prices and validation are shared by the browser (live price) and the server (final price), so a customer cannot change a price from the browser. The 3D fonts are three.js typeface files in `public/fonts/` (MgOpen Modata and Cosmetica, Droid Sans and Droid Serif; free licences, see `public/fonts/README.md`).
+
 ## Deploy to Vercel
 
 The site and its API both run on Vercel: the built site is served from Vercel's CDN, and `api/index.js` runs the Express API (`server/app.js`) as one function. `vercel.json` sends `/api/*` there and every other path to the site.

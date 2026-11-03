@@ -11,6 +11,7 @@ import { sendEnquiryEmails } from './mail.js'
 import { filesKind, KINDS, refOk, readRef, sampleUrl, localUpload, localFile, samplesDir, blobToken, blobIn, sendBlob } from './files.js'
 import { productById } from '../shared/products.js'
 import { estimatePart, orderTotals, byId, MATERIALS, COLORS, QUALITIES, SHIPPING, PAYMENT_METHODS } from '../shared/pricing.js'
+import { MINIME, designProductById, normalizeDesign, priceDesign, describeDesign, designTitle } from '../shared/designs.js'
 
 export const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)
 export const ADMIN_KEY = process.env.ADMIN_KEY || (isProd ? null : 'tobor-admin')
@@ -134,6 +135,20 @@ async function resolveLine(item) {
     if (!p) throw new Error('One of the products in your cart is no longer available.')
     const color = p.colors.includes(item.color) ? item.color : p.color
     return { kind: 'product', productId: p.id, name: p.name, color: byId(COLORS, color).name, qty, unitPrice: p.price }
+  }
+  if (item.kind === 'design') {
+    const design = normalizeDesign(item.design) // throws a message the customer can act on
+    const kind = designProductById(design.product).kind
+    let photos = []
+    if (kind !== 'text') {
+      photos = (Array.isArray(item.photos) ? item.photos : []).slice(0, kind === 'figure' ? MINIME.maxPhotos : 1).map((p) => clean(p, 500))
+      if (photos.length < 1 || !photos.every((p) => refOk('photos', p))) throw new Error(`The ${kind === 'figure' ? 'Mini-Me' : 'photo gift'} photo is missing. Add it again from the designer.`)
+    }
+    return {
+      kind: 'design', name: designTitle(design), summary: describeDesign(design), design, photos, qty,
+      unitPrice: priceDesign(design, qty).unit,
+      sampleFirst: kind === 'figure', // the team sends the cartoon for approval before printing
+    }
   }
   if (item.kind === 'print') {
     const fileId = clean(item.fileId, 500)

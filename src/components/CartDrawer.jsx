@@ -1,25 +1,30 @@
 import { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { X, Trash2, FileBox } from 'lucide-react'
+import { X, Trash2, FileBox, Sparkles } from 'lucide-react'
 import { useCart, unitPriceOf } from '../lib/cart.jsx'
 import { money } from '../lib/format.js'
 import { productById } from '../../shared/products.js'
 import { byId, COLORS } from '../../shared/pricing.js'
+import { describeDesign } from '../../shared/designs.js'
 import Thumb from './Thumb.jsx'
 import QtyStepper from './QtyStepper.jsx'
 
 export function CartLine({ item, compact = false }) {
   const { setQty, remove } = useCart()
   const product = item.kind === 'product' ? productById(item.productId) : null
-  const color = byId(COLORS, item.color)
+  const design = item.kind === 'design' ? item.design : null
+  // the dot shows the main colour: the print colour, or a design's letters or accent
+  const color = byId(COLORS, design ? design.textColor ?? design.accent : item.color)
   const name = product?.name ?? item.name
   return (
     <li className={`cart-line ${compact ? 'is-compact' : ''}`}>
       {product ? (
         <Thumb product={product} color={item.color} className="cart-thumb" />
+      ) : design && item.thumb ? (
+        <div className="thumb cart-thumb design-thumb"><img src={item.thumb} alt="" /></div>
       ) : (
         <div className="thumb cart-thumb print-thumb" style={{ '--tint': color?.hex }}>
-          <FileBox size={28} aria-hidden="true" />
+          {design ? <Sparkles size={28} aria-hidden="true" /> : <FileBox size={28} aria-hidden="true" />}
         </div>
       )}
       <div className="cart-line-info">
@@ -30,8 +35,9 @@ export function CartLine({ item, compact = false }) {
         )}
         <span className="cart-line-meta">
           <i className="dot" style={{ background: color?.hex }} />
-          {color?.name}
+          {design ? describeDesign(design) : color?.name}
           {item.kind === 'print' && `, ${item.materialName}, ${item.qualityName}, ${item.infill}% infill`}
+          {design?.product === 'minime' && '. You approve the cartoon on WhatsApp before it prints'}
         </span>
         <div className="cart-line-row">
           <QtyStepper value={item.qty} onChange={(q) => setQty(item.key, q)} label={`Quantity of ${name}`} />

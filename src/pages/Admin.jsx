@@ -121,8 +121,17 @@ function RecordCard({ adminKey, record, notes, onDone }) {
               <ul className="order-items">
                 {record.items.map((i, n) => (
                   <li key={n}>
-                    <span>{i.qty} × {i.name}<small>{i.color}{i.kind === 'print' ? `, ${i.material}, ${i.quality}, ${i.infill}% infill, ${i.volumeCm3} cm³${i.needsReview ? ', price needs review' : ''}` : ''}</small></span>
+                    <span>
+                      {i.qty} × {i.name}
+                      <small>
+                        {i.kind === 'design' ? i.summary : i.color}
+                        {i.kind === 'print' ? `, ${i.material}, ${i.quality}, ${i.infill}% infill, ${i.volumeCm3} cm³${i.needsReview ? ', price needs review' : ''}` : ''}
+                        {i.sampleFirst ? '. Send the cartoon for approval before printing' : ''}
+                        {i.design?.notes ? `. Customer notes: ${i.design.notes}` : ''}
+                      </small>
+                    </span>
                     {i.kind === 'print' && <a className="link-btn" href={fileUrl(adminKey, 'models', i.fileId)} download={i.name}><Download size={14} aria-hidden="true" /> File</a>}
+                    {i.photos?.map((p, k) => <a key={p} className="link-btn" href={fileUrl(adminKey, 'photos', p)} target="_blank" rel="noreferrer">Photo {k + 1}</a>)}
                   </li>
                 ))}
               </ul>
