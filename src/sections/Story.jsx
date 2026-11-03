@@ -6,6 +6,7 @@ import { Film, filmPace } from '../three/film.js'
 import { logosReady } from '../lib/brand.js'
 import { WhatsAppIcon } from '../components/Icons.jsx'
 import Wordmark from '../components/Wordmark.jsx'
+import HeroTabs from './HeroTabs.jsx'
 
 // Scroll budget: a short hold on the opening shot for the hero, the film, then a short hold at the end.
 const HOLD_START = 0.07
@@ -142,6 +143,7 @@ export default function Story() {
 
   const step = STEPS[active]
   const ChipIcon = (step ?? STEPS[0]).icon
+  const [heroTab, setHeroTab] = useState('quote')
 
   return (
     <section ref={section} className={`story ${ready ? 'is-ready' : ''}`} aria-label="How TOBOR works, from photo to delivery">
@@ -150,16 +152,12 @@ export default function Story() {
         <div className="story-shade" aria-hidden="true" />
 
         <div className="story-hero">
-          <div className="hero-card glass">
+          <div className={`hero-card glass ${heroTab !== 'quote' ? 'has-designer' : ''}`}>
             <h1 className="story-title">
               <Wordmark size="hero" />
               <span className="sr-only">TOBOR 3D printing</span>
             </h1>
-            <p className="story-lede">Send a photo of anything. We model it, print it and deliver it to your door.</p>
-            <div className="story-actions">
-              <button className="btn btn-lg" onClick={() => scrollToEl(document.getElementById('quote'))}>Get a free quote</button>
-              <Link className="btn btn-lg btn-glass" to="/shop">Shop ready-made prints</Link>
-            </div>
+            <HeroTabs onTabChange={setHeroTab} />
           </div>
           <p className="story-cue glass">
             <ArrowDown size={16} aria-hidden="true" /> Scroll to follow one print from photo to doorstep

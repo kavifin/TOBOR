@@ -42,6 +42,18 @@ The Node server then serves both the site and the API on `PORT` (or `API_PORT`).
 | Razorpay | `server/payments.js` |
 | Design tokens (colours, radii, spacing, fonts) | `design/tokens.json` → `src/styles/tokens.css` |
 
+## Design your own
+
+Personalised prints a customer configures in the browser, with a live 3D preview, the finished size in mm and the price before ordering. Tabs in the hero hold a compact designer; the full designer is the "Design your own" section (`/#design`, `/#keychain`, `/#stand`, `/#minime`).
+
+| Product | How it works |
+| --- | --- |
+| Name keychain | Name, font, letter and tag colours, three sizes. The 3D model is built live from the typed text (`src/three/text3d.js`). |
+| Desk name stand | Standing letters on a base, same controls, three widths. |
+| Mini-Me | 1 to 3 photos, keychain/standee/magnet, 2 to 4 colours. The team models the cartoon and sends it on WhatsApp for approval before printing (the order line carries `sampleFirst`). |
+
+Products, prices and validation live in `shared/designs.js`, used by the browser for the live price and by the server for the final one, so a customer cannot change a price from the browser. The 3D fonts are three.js typeface files in `public/fonts/` (MgOpen Modata and Cosmetica, Droid Sans; free licences, see `public/fonts/README.md`).
+
 ## Deploy to Vercel
 
 The site and its API both run on Vercel: the built site is served from Vercel's CDN, and `api/index.js` runs the Express API (`server/app.js`) as one function. `vercel.json` sends `/api/*` there and every other path to the site.

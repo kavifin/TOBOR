@@ -15,13 +15,15 @@ export default function Header() {
     setMenu(false)
   }, [pathname])
 
-  const toQuote = (e) => {
+  // Home-page sections: glide there when already home, otherwise load home at that section.
+  const toSection = (id) => (e) => {
     e.preventDefault()
     setMenu(false)
-    const el = document.getElementById('quote')
+    const el = document.getElementById(id)
     if (el) scrollToEl(el)
-    else navigate('/#quote')
+    else navigate(`/#${id}`)
   }
+  const toQuote = toSection('quote')
 
   // Already home: glide back to the start of the scroll story instead of reloading the page.
   const toHome = (e) => {
@@ -36,6 +38,7 @@ export default function Header() {
     <>
       <NavLink to="/" end onClick={toHome}>Home</NavLink>
       <a href="/#quote" onClick={toQuote}>Print my part</a>
+      <a href="/#design" onClick={toSection('design')}>Design your own</a>
       <NavLink to="/shop">Shop</NavLink>
       <NavLink to="/track">Track order</NavLink>
     </>

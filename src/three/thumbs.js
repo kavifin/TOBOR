@@ -20,15 +20,26 @@ function context() {
   return ctx
 }
 
-/** Product-style image of any ready-made object (standing on y = 0). Caller keeps the object. */
-export function renderObjectThumb(object, { angle = 0.35 } = {}) {
+/**
+ * Product-style image of any ready-made object (standing on y = 0). Caller keeps the object.
+ * `size` renders a smaller square, e.g. a cart thumbnail that has to fit in localStorage.
+ */
+export function renderObjectThumb(object, { angle = 0.35, size = 720 } = {}) {
   try {
     const { renderer, scene, camera } = context()
     object.rotation.y = angle
     scene.add(object)
     frameObject(camera, object, { distance: 1.02 })
     renderer.render(scene, camera)
-    const url = renderer.domElement.toDataURL('image/webp', 0.9)
+    let url
+    if (size < 720) {
+      const c = document.createElement('canvas')
+      c.width = c.height = size
+      c.getContext('2d').drawImage(renderer.domElement, 0, 0, size, size)
+      url = c.toDataURL('image/webp', 0.8)
+    } else {
+      url = renderer.domElement.toDataURL('image/webp', 0.9)
+    }
     scene.remove(object)
     return url
   } catch {

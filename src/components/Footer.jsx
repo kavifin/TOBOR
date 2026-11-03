@@ -111,6 +111,7 @@ export default function Footer() {
           <nav className="footer-links" aria-label="Footer">
             <Link to="/shop">Shop</Link>
             <Link to="/#quote">Get a quote</Link>
+            <Link to="/#design">Design your own</Link>
             <Link to="/send">Send photos from your phone</Link>
             <Link to="/track">Track an order</Link>
             <Link to="/#faq">Questions</Link>

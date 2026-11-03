@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 import { productById } from '../../shared/products.js'
 import { estimatePart } from '../../shared/pricing.js'
+import { priceDesign } from '../../shared/designs.js'
 
 const KEY = 'tobor.cart.v1'
 const CartContext = createContext(null)
@@ -14,7 +15,12 @@ function load() {
 }
 
 // A line's key decides whether adding again merges quantities.
-const lineKey = (item) => (item.kind === 'product' ? `${item.productId}:${item.color}` : `print:${item.fileId}:${item.material}:${item.color}:${item.quality}:${item.infill}`)
+const lineKey = (item) =>
+  item.kind === 'product'
+    ? `${item.productId}:${item.color}`
+    : item.kind === 'design'
+      ? `design:${JSON.stringify(item.design)}:${(item.photos ?? []).join(',')}`
+      : `print:${item.fileId}:${item.material}:${item.color}:${item.quality}:${item.infill}`
 
 function reducer(items, action) {
   switch (action.type) {
@@ -39,7 +45,9 @@ function reducer(items, action) {
 export const unitPriceOf = (item) =>
   item.kind === 'product'
     ? productById(item.productId)?.price ?? 0
-    : estimatePart({ volumeCm3: item.volumeCm3, material: item.material, quality: item.quality, infill: item.infill, qty: item.qty }).unit
+    : item.kind === 'design'
+      ? priceDesign(item.design, item.qty).unit
+      : estimatePart({ volumeCm3: item.volumeCm3, material: item.material, quality: item.quality, infill: item.infill, qty: item.qty }).unit
 
 export function CartProvider({ children }) {
   const [items, dispatch] = useReducer(reducer, undefined, load)
