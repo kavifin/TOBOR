@@ -1,5 +1,5 @@
 import { COLORS } from '../../shared/pricing.js'
-import { FONTS } from '../../shared/designs.js'
+import { FONTS, COLOR_COMBOS } from '../../shared/designs.js'
 
 /** Font choice, shown as "Aa" samples set in a similar screen face. */
 export function FontPicker({ value, onChange, compact = false }) {
@@ -11,6 +11,24 @@ export function FontPicker({ value, onChange, compact = false }) {
           {f.name}
         </button>
       ))}
+    </div>
+  )
+}
+
+/** Two-colour combinations that print well, as quick picks above the swatches. */
+export function ComboPicker({ textColor, baseColor, onChange }) {
+  const hex = (id) => COLORS.find((c) => c.id === id)?.hex
+  return (
+    <div className="combo-row" role="group" aria-label="Colour combinations">
+      {COLOR_COMBOS.map((c) => {
+        const on = c.textColor === textColor && c.baseColor === baseColor
+        return (
+          <button key={c.id} type="button" className="combo" aria-pressed={on} onClick={() => onChange({ textColor: c.textColor, baseColor: c.baseColor })} title={c.name}>
+            <span className="combo-swatch" style={{ '--base': hex(c.baseColor), '--text': hex(c.textColor) }} aria-hidden="true">Aa</span>
+            <span className="sr-only">{c.name}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -44,6 +62,22 @@ export function Segmented({ label, options, value, onChange, columns }) {
           <button key={o.id} type="button" role="radio" aria-checked={value === o.id} onClick={() => onChange(o.id)}>
             <strong>{o.name}</strong>
             {o.note && <small>{o.note}</small>}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Small toggle chips, e.g. preview scenes or the coin for scale. */
+export function ChipRow({ label, options, value, onChange }) {
+  return (
+    <div className="chip-field" role="group" aria-label={label}>
+      {label && <span className="control-label">{label}</span>}
+      <div className="chip-row">
+        {options.map((o) => (
+          <button key={o.id} type="button" className="mini-chip" aria-pressed={value === o.id} onClick={() => onChange(o.id)}>
+            {o.name}
           </button>
         ))}
       </div>

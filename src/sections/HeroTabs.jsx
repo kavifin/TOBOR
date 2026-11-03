@@ -2,27 +2,27 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Printer, KeyRound, Type, UserRound, ArrowRight } from 'lucide-react'
 import DesignPreview from '../components/DesignPreview.jsx'
-import { FontPicker, ColorPicker } from '../components/DesignControls.jsx'
-import { useDraft, setProduct, patchDesign } from '../lib/designDraft.js'
+import { FontPicker, ComboPicker } from '../components/DesignControls.jsx'
+import { useDraft, setProduct, patchDraft, textDesignFor } from '../lib/designDraft.js'
 import { scrollToEl } from '../lib/smooth.js'
 import { money } from '../lib/format.js'
-import { TEXT_PRODUCTS, MINIME, normalizeDesign, priceDesign } from '../../shared/designs.js'
+import { MINIME, designProductById, normalizeDesign, priceDesign } from '../../shared/designs.js'
 
 const TABS = [
   { id: 'quote', label: 'Print my part', icon: Printer },
-  { id: 'keychain', label: 'Name keychain', icon: KeyRound },
+  { id: 'tag', label: 'Name keychain', icon: KeyRound },
   { id: 'stand', label: 'Name stand', icon: Type },
   { id: 'minime', label: 'Mini-Me', icon: UserRound },
 ]
 
-/** Try it here: a name, a font and two colours, with the real 3D preview. The full designer takes it from there. */
+/** Try it here: a name, a font and a colour pair, with the real 3D preview. The full designer takes it from there. */
 function HeroDesigner({ product, onOpen }) {
-  const spec = TEXT_PRODUCTS[product]
-  const draft = useDraft()[product]
-  const set = (patch) => patchDesign(product, patch)
+  const spec = designProductById(product)
+  const draft = useDraft()
+  const design = textDesignFor(draft, product)
   let price = null
   try {
-    price = priceDesign(normalizeDesign({ product, ...draft }))
+    price = priceDesign(normalizeDesign(design))
   } catch {
     /* nothing typed yet */
   }
@@ -31,18 +31,20 @@ function HeroDesigner({ product, onOpen }) {
       <div className="hero-designer-controls">
         <label className="hero-input">
           <span>Your name</span>
-          <input value={draft.text} maxLength={spec.maxChars} onChange={(e) => set({ text: e.target.value })} placeholder="Type a name" autoComplete="off" />
+          <input value={draft.text} maxLength={spec.maxChars} onChange={(e) => patchDraft({ text: e.target.value })} placeholder="Type a name" autoComplete="off" />
         </label>
-        <FontPicker compact value={draft.font} onChange={(font) => set({ font })} />
-        <ColorPicker label="Letters" value={draft.textColor} onChange={(textColor) => set({ textColor })} />
-        <ColorPicker label={product === 'stand' ? 'Base' : 'Tag'} value={draft.baseColor} onChange={(baseColor) => set({ baseColor })} />
+        <FontPicker compact value={draft.font} onChange={(font) => patchDraft({ font })} />
+        <div className="hero-combos">
+          <span className="control-label">Colours</span>
+          <ComboPicker textColor={draft.textColor} baseColor={draft.baseColor} onChange={patchDraft} />
+        </div>
       </div>
       <div className="hero-designer-preview">
-        <DesignPreview design={{ product, ...draft }} label={`${spec.name} preview`} />
+        <DesignPreview design={design} label={`${spec.name} preview`} />
         <div className="hero-designer-foot">
           <span className="hero-price">From <strong>{money(price?.unit ?? 0)}</strong></span>
           <button className="btn" onClick={onOpen}>
-            Choose a size and order <ArrowRight size={16} aria-hidden="true" />
+            More styles and sizes <ArrowRight size={16} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -82,7 +84,7 @@ export default function HeroTabs({ onTabChange }) {
             </div>
           </>
         )}
-        {(tab === 'keychain' || tab === 'stand') && <HeroDesigner key={tab} product={tab} onOpen={() => goDesign(tab)} />}
+        {(tab === 'tag' || tab === 'stand') && <HeroDesigner key={tab} product={tab} onOpen={() => goDesign(tab)} />}
         {tab === 'minime' && (
           <div className="hero-minime">
             <p className="story-lede">A cartoon figure of you, modelled from your photos and printed as a keychain, a desk standee or a fridge magnet.</p>

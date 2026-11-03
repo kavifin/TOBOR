@@ -11,7 +11,7 @@ import { sendEnquiryEmails } from './mail.js'
 import { filesKind, KINDS, refOk, readRef, sampleUrl, localUpload, localFile, samplesDir, blobToken, blobIn, sendBlob } from './files.js'
 import { productById } from '../shared/products.js'
 import { estimatePart, orderTotals, byId, MATERIALS, COLORS, QUALITIES, SHIPPING, PAYMENT_METHODS } from '../shared/pricing.js'
-import { MINIME, normalizeDesign, priceDesign, describeDesign, designTitle } from '../shared/designs.js'
+import { MINIME, designProductById, normalizeDesign, priceDesign, describeDesign, designTitle } from '../shared/designs.js'
 
 export const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)
 export const ADMIN_KEY = process.env.ADMIN_KEY || (isProd ? null : 'tobor-admin')
@@ -138,15 +138,16 @@ async function resolveLine(item) {
   }
   if (item.kind === 'design') {
     const design = normalizeDesign(item.design) // throws a message the customer can act on
+    const kind = designProductById(design.product).kind
     let photos = []
-    if (design.product === 'minime') {
-      photos = (Array.isArray(item.photos) ? item.photos : []).slice(0, MINIME.maxPhotos).map((p) => clean(p, 500))
-      if (photos.length < MINIME.minPhotos || !photos.every((p) => refOk('photos', p))) throw new Error('A Mini-Me photo is missing. Add your photos again from the designer.')
+    if (kind !== 'text') {
+      photos = (Array.isArray(item.photos) ? item.photos : []).slice(0, kind === 'figure' ? MINIME.maxPhotos : 1).map((p) => clean(p, 500))
+      if (photos.length < 1 || !photos.every((p) => refOk('photos', p))) throw new Error(`The ${kind === 'figure' ? 'Mini-Me' : 'photo gift'} photo is missing. Add it again from the designer.`)
     }
     return {
       kind: 'design', name: designTitle(design), summary: describeDesign(design), design, photos, qty,
       unitPrice: priceDesign(design, qty).unit,
-      sampleFirst: design.product === 'minime', // the team sends the cartoon for approval before printing
+      sampleFirst: kind === 'figure', // the team sends the cartoon for approval before printing
     }
   }
   if (item.kind === 'print') {
